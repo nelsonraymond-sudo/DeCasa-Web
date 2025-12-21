@@ -42,8 +42,8 @@
                                 <span class="text-muted small">Price per month</span>
                                 <div class="fw-bold text-success fs-4">Rp {{ number_format($p->harga, 0, ',', '.') }}</div>
                             </div>
-                            <
-                        <a href="{{ route('admin.properti.show', $p->id_properti) }}" class="btn btn-outline-dark px-4" title="View Detail">
+                            
+                        <a href="{{ route('admin.properti.show', $p->id_properti) }}" class="btn btn-outline-primary px-4" title="View Detail">
                         View Details</a>
                         </div>
                     </div>

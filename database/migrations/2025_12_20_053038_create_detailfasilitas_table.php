@@ -6,25 +6,22 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up()
-{
-    Schema::create('detailfasilitas', function (Blueprint $table) {
-        $table->string('id_detail', 5)->primary();
-        $table->string('id_properti', 5);
-        $table->string('id_fasilitas', 5);
-        $table->timestamps();
+    {
+        Schema::create('detailfasilitas', function (Blueprint $table) {
+            // UBAH DARI: $table->string('id_detail', 5)->primary();
+            // MENJADI:
+            $table->id('id_detail'); // Ini otomatis membuat kolom 'id' (Big Integer, Auto Increment, Primary)
 
-        $table->foreign('id_properti')->references('id_properti')->on('properti')->onDelete('cascade');
-        $table->foreign('id_fasilitas')->references('id_fasilitas')->on('fasilitas')->onDelete('cascade');
-    });
-}
+            $table->string('id_properti', 5);
+            $table->string('id_fasilitas', 5);
+            $table->timestamps();
 
-    /**
-     * Reverse the migrations.
-     */
+            $table->foreign('id_properti')->references('id_properti')->on('properti')->onDelete('cascade');
+            $table->foreign('id_fasilitas')->references('id_fasilitas')->on('fasilitas')->onDelete('cascade');
+        });
+    }
+
     public function down(): void
     {
         Schema::dropIfExists('detailfasilitas');

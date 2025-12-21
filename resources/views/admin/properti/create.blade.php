@@ -24,7 +24,7 @@
 
                 <div class="mb-3">
                     <label class="form-label text-muted small fw-bold">PROPERTY NAME</label>
-                    <input type="text" name="nm_properti" class="form-control py-2" placeholder="Ex: Grand Decasa Residence" value="{{ old('nm_properti') }}" required>
+                    <input type="text" name="nm_properti" class="form-control py-2" placeholder="Ex: Rumah Kentang" value="{{ old('nm_properti') }}" required>
                 </div>
 
                 <div class="mb-3">
@@ -47,15 +47,15 @@
                     <div class="col-md-6 mb-3">
                         <label class="form-label text-muted small fw-bold">STATUS</label>
                         <select name="status" class="form-select py-2">
-                            <option value="tersedia">Tersedia (Available)</option>
-                            <option value="terisi">Terisi (Occupied)</option>
+                            <option value="available">Available</option>
+                            <option value="full">Full</option>
                         </select>
                     </div>
                 </div>
 
                 <div class="mb-3">
                     <label class="form-label text-muted small fw-bold">ADDRESS / LOCATION</label>
-                    <input type="text" name="alamat" class="form-control py-2" placeholder="Ex: Jl. Sudirman No. 45, Jakarta" value="{{ old('alamat') }}">
+                    <input type="text" name="alamat" class="form-control py-2" placeholder="Ex: Jl. Sabirin Kotabaru" value="{{ old('alamat') }}">
                 </div>
 
                 <div class="mb-3">
@@ -70,7 +70,6 @@
                 @foreach($fasilitas as $f)
                 <div class="col-md-4 mb-2">
                 <div class="form-check">
-                    {{-- name="fasilitas[]" penting agar dikirim sebagai array --}}
                     <input class="form-check-input rounded-0" type="checkbox" name="fasilitas[]" value="{{ $f->id_fasilitas }}" id="fas-{{ $f->id_fasilitas }}">
                     <label class="form-check-label small" for="fas-{{ $f->id_fasilitas }}">
                         {{ $f->nm_fasilitas }}
@@ -84,10 +83,38 @@
 </div>
 
                 <div class="mb-4">
-                    <label class="form-label text-muted small fw-bold">PROPERTY IMAGE</label>
-                    <input type="file" name="foto" class="form-control">
-                    <div class="form-text">Format: JPG, PNG, JPEG. Max: 2MB.</div>
-                </div>
+    <label class="form-label text-muted small fw-bold">PROPERTY IMAGES</label>
+    
+    {{-- Input Multiple --}}
+    <input type="file" name="fotos[]" id="inputFotos" class="form-control" multiple accept="image/*" required>
+    
+    <div class="form-text">
+       Select multiple photos at once. The first photo will be the main thumbnail. (Max: 2MB/photo)
+    </div>
+
+    <div class="d-flex flex-wrap gap-2 mt-3" id="preview-container"></div>
+</div>
+
+<script>
+    document.getElementById('inputFotos').addEventListener('change', function(event) {
+        const container = document.getElementById('preview-container');
+        container.innerHTML = ''; // Bersihkan preview lama
+        
+        Array.from(event.target.files).forEach(file => {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const img = document.createElement('img');
+                img.src = e.target.result;
+                img.style.width = '100px';
+                img.style.height = '100px';
+                img.style.objectFit = 'cover';
+                img.className = 'border rounded shadow-sm';
+                container.appendChild(img);
+            }
+            reader.readAsDataURL(file);
+        });
+    });
+</script>
 
                 <hr>
 

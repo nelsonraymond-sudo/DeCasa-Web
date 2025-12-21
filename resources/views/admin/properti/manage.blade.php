@@ -1,6 +1,6 @@
 @extends('layouts.admin')
 
-@section('title', 'Update Property')
+@section('title', 'Manage Property')
 
 @section('content')
 <div class="d-flex justify-content-between align-items-center mb-4">
@@ -25,7 +25,7 @@
             <div class="card-body p-4">
                 <div class="d-flex justify-content-between mb-2">
                     <h5 class="fw-bold mb-0 text-dark">{{ $p->nm_properti }}</h5>
-                    <span class="badge rounded-0 {{ $p->status == 'tersedia' ? 'bg-success' : 'bg-secondary' }}">
+                    <span class="badge rounded-0 {{ $p->status == 'available' ? 'bg-success' : 'bg-secondary' }}">
                         {{ strtoupper($p->status) }}
                     </span>
                 </div>
@@ -60,7 +60,7 @@
                         <a href="{{ route('admin.properti.edit', $p->id_properti) }}" class="btn btn-sm btn-outline-warning border-0" title="Edit">
                             Edit
                         </a>
-                        
+
                         <form action="{{ route('admin.properti.destroy', $p->id_properti) }}" method="POST" class="d-inline">
                             @csrf @method('DELETE')
                             <button type="submit" class="btn btn-sm btn-outline-danger border-0" onclick="return confirm('Delete item?')" title="Delete">

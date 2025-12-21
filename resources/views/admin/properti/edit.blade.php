@@ -13,23 +13,24 @@
                 @csrf
                 @method('PUT') 
                 
+                {{-- FORM DATA TEKS (Sama seperti sebelumnya) --}}
                 <div class="mb-3">
                     <label class="form-label text-muted small fw-bold">PROPERTY NAME</label>
                     <input type="text" name="nm_properti" class="form-control" value="{{ old('nm_properti', $properti->nm_properti) }}" required>
                 </div>
 
                 <div class="mb-3">
-                <label class="form-label text-uppercase small fw-bold">Category</label>
-                <select name="id_kategori" class="form-select" required>
-                    <option value="">-- Select Category --</option>
-                    @foreach($kategori as $item)
-                        <option value="{{ $item->id_kategori }}" 
-                            {{ $properti->id_kategori == $item->id_kategori ? 'selected' : '' }}>
-                            {{ $item->nm_kategori }}
-                        </option>
-                    @endforeach
-                </select>
-            </div>
+                    <label class="form-label text-uppercase small fw-bold">Category</label>
+                    <select name="id_kategori" class="form-select" required>
+                        <option value="">-- Select Category --</option>
+                        @foreach($kategori as $item)
+                            <option value="{{ $item->id_kategori }}" 
+                                {{ $properti->id_kategori == $item->id_kategori ? 'selected' : '' }}>
+                                {{ $item->nm_kategori }}
+                            </option>
+                        @endforeach
+                    </select>
+                </div>
 
                 <div class="row">
                     <div class="col-md-6 mb-3">
@@ -76,14 +77,48 @@
                     </div>
                 </div>
 
+                {{-- === BAGIAN BARU: MANAJEMEN FOTO === --}}
                 <div class="mb-4">
-                    <label class="form-label text-muted small fw-bold">UPDATE PHOTO (Optional)</label>
-                    <input type="file" name="foto" class="form-control mb-2">
-                    @if($properti->url_foto)
-                        <small class="text-muted">Current Photo:</small><br>
-                        <img src="{{ asset('storage/' . $properti->url_foto) }}" height="80" class="border p-1">
+                    <label class="form-label text-muted small fw-bold d-block">MANAGE PHOTOS</label>
+                    
+                    {{-- 1. Upload Foto Baru --}}
+                    <div class="mb-3">
+                        <label class="small text-muted">Add New Photos:</label>
+                        <input type="file" name="new_fotos[]" class="form-control" multiple accept="image/*">
+                        <div class="form-text">You can select multiple files to add to the gallery.</div>
+                    </div>
+
+                    {{-- 2. List Foto Lama (Galeri) --}}
+                    @if(isset($fotos) && count($fotos) > 0)
+                        <label class="small text-muted mb-2">Existing Gallery (Check to DELETE):</label>
+                        <div class="row g-2">
+                            @foreach($fotos as $foto)
+                                <div class="col-md-3 col-4 text-center">
+                                    <div class="border p-1 position-relative bg-light">
+                                        {{-- Tampilkan Gambar --}}
+                                        <img src="{{ Str::startsWith($foto->url_foto, 'http') ? $foto->url_foto : asset('storage/' . $foto->url_foto) }}" 
+                                             class="img-fluid" 
+                                             style="height: 80px; width: 100%; object-fit: cover;">
+                                        
+                                        {{-- Checkbox Hapus --}}
+                                        <div class="mt-1">
+                                            <input type="checkbox" name="delete_fotos[]" 
+                                                   value="{{ $foto->url_foto }}" 
+                                                   id="del-{{ $loop->index }}" 
+                                                   class="form-check-input border-danger">
+                                            <label for="del-{{ $loop->index }}" class="small text-danger fw-bold" style="cursor: pointer;">
+                                                Delete
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                            @endforeach
+                        </div>
+                    @else
+                        <div class="alert alert-warning small py-2">No photos available for this property.</div>
                     @endif
                 </div>
+                {{-- === END BAGIAN FOTO === --}}
 
                 <hr>
 

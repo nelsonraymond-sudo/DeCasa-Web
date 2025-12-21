@@ -1,49 +1,32 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Admin;
 
-use Illuminate\Http\Request; 
+use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Session;
 
-class AuthController extends Controller
-{ public function index()
-    {
-        $properti = DB::table('view_properti_tersedia')->get();
-
-        return view('admin.properti.index', compact('properti'));
-    }
-public function dashboard()
+class DashboardController extends Controller
 {
-    $totalProperti = DB::table('properti')->count();
-    $propertiTersedia = DB::table('properti')->where('status', 'tersedia')->count();
-    $propertiTerisi = DB::table('properti')->where('status', '!=', 'tersedia')->count();
-    $totalPendapatan = DB::table('laporan_decasa')->sum('total_harga') ?? 0;
-
-    return view('admin.dashboard', compact(
-        'totalProperti', 
-        'propertiTersedia', 
-        'propertiTerisi',
-        'totalPendapatan'
-    ));
-}
-    public function show($id)
+    public function index()
     {
-        $properti = \Illuminate\Support\Facades\DB::table('properti')
-            ->where('id_properti', $id)
-            ->first();
+        // 1. Hitung-hitungan Properti (Masih manual karena View Anda memfilter status)
+        $totalProperti    = DB::table('properti')->count();
+        
+        // Bisa pakai view_properti_tersedia untuk hitung yang tersedia
+        $propertiTersedia = DB::table('view_properti_tersedia')->count(); 
+        
+        $propertiTerisi   = $totalProperti - $propertiTersedia;
 
-        if (!$properti) {
-            return redirect()->back()->with('error', 'Properti tidak ditemukan');
-        }
+        // 2. Total Pendapatan dari VIEW_LAPORAN_DECASA
+        // Kolom di view Anda adalah 'total_revenue'
+        $totalPendapatan = DB::table('view_laporan_decasa')->sum('total_revenue');
 
-        $fasilitas = \Illuminate\Support\Facades\DB::table('detailfasilitas')
-            ->join('fasilitas', 'detailfasilitas.id_fasilitas', '=', 'fasilitas.id_fasilitas')
-            ->where('detailfasilitas.id_properti', $id)
-            ->get();
-
-        return view('admin.properti.show', compact('properti', 'fasilitas'));
+        return view('admin.dashboard', compact(
+            'totalProperti', 
+            'propertiTersedia', 
+            'propertiTerisi',
+            'totalPendapatan'
+        ));
+        
     }
-    
 }
-    

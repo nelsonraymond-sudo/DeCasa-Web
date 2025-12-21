@@ -12,6 +12,7 @@
         :root {
             --primary: #697565; 
             --primary-dark: #4E634D;
+            --secondary: #DAA520;
             --bg-light: #F4F6F4;
             --sidebar-width: 250px;
         }
@@ -21,6 +22,7 @@
             background-color: var(--bg-light);
             overflow-x: hidden;
         }
+
 
         .btn, .card, .form-control, .nav-link, .badge, .alert, img {
             border-radius: 0 !important;
@@ -41,7 +43,7 @@
         .sidebar-brand {
             font-size: 1.5rem;
             font-weight: 800;
-            color: var(--primary);
+            color: var(--secondary);
             text-align: center;
             margin-bottom: 2rem;
             letter-spacing: 2px;

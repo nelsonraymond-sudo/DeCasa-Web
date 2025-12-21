@@ -19,7 +19,7 @@ return new class extends Migration
         $table->text('deskripsi');
         $table->text('alamat');
         $table->decimal('harga', 12, 2);
-        $table->enum('status', ['tersedia', 'penuh']);
+        $table->enum('status', ['available', 'full']);
         $table->timestamps();
 
         $table->foreign('id_user')->references('id_user')->on('users')->onDelete('cascade');

@@ -5,8 +5,10 @@
 @section('content')
 <div class="card border-0 shadow-sm">
     <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
-        <h6 class="m-0 fw-bold text-muted">DATA TRANSAKSI</h6>
-        <button class="btn btn-sm btn-outline-dark" onclick="window.print()">🖨 Print PDF</button>
+        <div>
+            <h6 class="m-0 fw-bold text-muted">DATA TRANSAKSI</h6>
+        </div>
+        <button class="btn btn-sm btn-outline-primary" onclick="window.print()">Print PDF</button>
     </div>
     
     <div class="card-body p-0">
@@ -18,26 +20,50 @@
                         <th class="py-3">Tanggal</th>
                         <th class="py-3">Customer</th>
                         <th class="py-3">Properti</th>
+                        <th class="py-3">Status</th> 
                         <th class="py-3 text-end pe-4">Nominal</th>
                     </tr>
                 </thead>
                 <tbody>
                     @forelse($laporan as $l)
                     <tr>
-                        <td class="ps-4 fw-bold text-primary">#{{ $l->id_trans }}</td>
-                        <td>{{ date('d/m/Y', strtotime($l->tgl_trans)) }}</td>
+                        {{-- PERBAIKAN 1: id_trans diganti id_transaksi --}}
+                        <td class="ps-4 fw-bold text-primary">#{{ $l->id_transaksi }}</td>
+                        
+                        {{-- PERBAIKAN 2: tgl_trans diganti tanggal_book --}}
+                        <td>{{ date('d/m/Y', strtotime($l->tanggal_book)) }}</td>
+                        
                         <td>
-                            <div class="fw-bold text-dark">{{ $l->nm_user }}</div>
+                            <div class="fw-bold text-dark">{{ $l->nama_customer }}</div>
                         </td>
-                        <td>{{ $l->nm_properti }}</td>
+                        
+                        {{-- PERBAIKAN 3: nm_properti diganti nama_properti --}}
+                        <td>{{ $l->nama_properti }}</td>
+
+                        <td>
+                            {{-- Catatan: Status di view mengambil raw data (pending/lunas/batal) --}}
+                            @if($l->status == 'lunas')
+                                <span class="badge bg-success">Lunas</span>
+                            @elseif($l->status == 'pending')
+                                <span class="badge bg-warning text-dark">Menunggu Bayar</span>
+                            @elseif($l->status == 'batal')
+                                <span class="badge bg-danger">Dibatalkan</span>
+                            @else
+                                <span class="badge bg-secondary">{{ $l->status }}</span>
+                            @endif
+                        </td>
+                        
                         <td class="text-end pe-4 fw-bold text-success">
                             Rp {{ number_format($l->total_harga, 0, ',', '.') }}
                         </td>
                     </tr>
                     @empty
                     <tr>
-                        <td colspan="5" class="text-center py-5 text-muted">
-                            Belum ada data transaksi.
+                        <td colspan="6" class="text-center py-5 text-muted">
+                            <div class="d-flex flex-column align-items-center">
+                                <i class="bi bi-file-earmark-x fs-1 mb-2"></i>
+                                <span>Belum ada data transaksi.</span>
+                            </div>
                         </td>
                     </tr>
                     @endforelse

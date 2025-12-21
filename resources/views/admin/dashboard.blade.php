@@ -54,7 +54,7 @@
         <div class="card border-0 shadow-sm p-4">
             <h5 class="fw-bold mb-3">Quick Actions</h5>
             <div class="d-flex gap-3">
-                <a href="{{ route('admin.properti.create') }}" class="btn btn-outline-dark px-4 py-2">
+                <a href="{{ route('admin.properti.create') }}" class="btn btn-outline-primary px-4 py-2">
                     + Add New Property
                 </a>
                 <a href="{{ route('admin.laporan.index') }}" class="btn btn-primary px-4 py-2">
