@@ -11,12 +11,6 @@ class DetailFasilitas extends Model
 
     protected $table = 'detailfasilitas';
     
-    // HAPUS atau KOMENTARI baris-baris di bawah ini karena kita kembali ke default Laravel:
-    // protected $primaryKey = 'id_detail';
-    // public $incrementing = false;
-    // protected $keyType = 'string';
-
-    // Jika kamu ingin eksplisit (opsional, karena defaultnya sudah begini):
     protected $primaryKey = 'id'; 
     
     protected $guarded = [];

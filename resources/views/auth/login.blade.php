@@ -57,7 +57,7 @@
 
     <div class="card card-login p-5">
         <div class="text-center mb-4">
-            <h3 class="logo-text mb-2">DECASA DASHBOARD</h3>
+            <h3 class="logo-text mb-2">DeCasa Dahboard</h3>
             <p class="text-muted small">Sign in to manage your dashboard</p>
         </div>
 

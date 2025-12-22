@@ -23,7 +23,6 @@
             overflow-x: hidden;
         }
 
-
         .btn, .card, .form-control, .nav-link, .badge, .alert, img {
             border-radius: 0 !important;
         }
@@ -70,7 +69,7 @@
             border-left: 4px solid var(--primary-dark);
         }
 
-        .nav-link i { margin-right: 10px; width: 20px; text-align: center; }
+        .nav-link i { margin-right: 10px; width: 20px; text-align: center; font-size: 1.1rem; }
 
         .main-content {
             margin-left: var(--sidebar-width);
@@ -102,22 +101,55 @@
 
     <nav class="sidebar">
         <div class="sidebar-brand">DeCasa</div>
+        
         <div class="nav flex-column">
+            
+            {{-- Dashboard--}}
             <a href="{{ route('admin.dashboard') }}" class="nav-link {{ Request::routeIs('admin.dashboard') ? 'active' : '' }}">
-                 Dashboard
+                Dashboard
             </a>
+
+            {{-- Facility --}}
+            <a href="{{ route('admin.fasilitas.index') }}" class="nav-link {{ Request::routeIs('admin.fasilitas.index') ? 'active' : '' }}">
+                Facilities
+            </a>
+                </div>
+            </div>
+
+            <div class="my-2 border-top"></div> 
+            
+            {{-- Property --}}
             <a href="{{ route('admin.properti.index') }}" class="nav-link {{ Request::routeIs('admin.properti.index') ? 'active' : '' }}">
-                 Property List
+                Property List
             </a>
+
+            {{-- Manage --}}
             <a href="{{ route('admin.properti.manage') }}" class="nav-link {{ Request::routeIs('admin.properti.manage') ? 'active' : '' }}">
-                 Manage
+                Manage
             </a>
+
+            {{-- Add --}}
             <a href="{{ route('admin.properti.create') }}" class="nav-link {{ Request::routeIs('admin.properti.create') ? 'active' : '' }}">
-                 Add New
+                Add New
             </a>
+
+            <div class="my-2 border-top"></div> 
+            
+            {{-- Reports --}}
             <a href="{{ route('admin.laporan.index') }}" class="nav-link {{ Request::routeIs('admin.laporan.index') ? 'active' : '' }}">
-                 Laporan
+                Reports
             </a>
+
+            {{-- Customer --}}
+            <a href="{{ route('admin.customer.index') }}" class="nav-link {{ Request::routeIs('admin.customer.*') ? 'active' : '' }}">
+                Customers
+            </a>
+
+            {{-- Setting --}}
+            <a href="{{ route('admin.setting.index') }}" class="nav-link {{ Request::routeIs('admin.setting.*') ? 'active' : '' }}">
+                Settings
+            </a>
+
         </div>
     </nav>
 
@@ -132,12 +164,12 @@
                     <small class="text-muted" style="font-size: 0.75rem;">ID: {{ Auth::user()->id_user }}</small>
                 </div>
 
-                <img src="https://ui-avatars.com/api/?name={{ urlencode(Auth::user()->nm_user) }}&background=697565&color=fff" width="40" height="40" class="me-3">
+                <img src="https://ui-avatars.com/api/?name={{ urlencode(Auth::user()->nm_user) }}&background=697565&color=fff" width="40" height="40" class="me-3 rounded-circle">
 
                 <form action="{{ route('logout') }}" method="POST" class="d-inline">
                     @csrf
                     <button type="submit" class="btn btn-outline-danger btn-sm" title="Logout">
-                        Logout
+                        <i class="bi bi-box-arrow-right"></i> Logout
                     </button>
                 </form>
             </div>
@@ -145,21 +177,21 @@
 
         <div class="container-fluid px-0 mb-3">
             @if(session('success'))
-                <div class="alert alert-success alert-dismissible fade show rounded-0" role="alert">
-                    <strong>Berhasil!</strong> {{ session('success') }}
+                <div class="alert alert-success alert-dismissible fade show rounded-0 shadow-sm" role="alert">
+                    <i class="bi bi-check-circle me-2"></i><strong>Berhasil!</strong> {{ session('success') }}
                     <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
                 </div>
             @endif
 
             @if(session('error'))
-                <div class="alert alert-danger alert-dismissible fade show rounded-0" role="alert">
-                    <strong>Terjadi Kesalahan!</strong> {{ session('error') }}
+                <div class="alert alert-danger alert-dismissible fade show rounded-0 shadow-sm" role="alert">
+                    <i class="bi bi-exclamation-circle me-2"></i><strong>Terjadi Kesalahan!</strong> {{ session('error') }}
                     <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
                 </div>
             @endif
             
             @if ($errors->any())
-                <div class="alert alert-danger rounded-0">
+                <div class="alert alert-danger rounded-0 shadow-sm">
                     <ul class="mb-0">
                         @foreach ($errors->all() as $error)
                             <li>{{ $error }}</li>
@@ -169,9 +201,11 @@
             @endif
         </div>
 
+        {{-- CONTENT SECTION --}}
         @yield('content')
         
     </div>
 
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

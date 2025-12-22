@@ -88,7 +88,6 @@ return new class extends Migration
                 DECLARE last_number INT;
                 DECLARE new_id VARCHAR(5);
                 
-                -- Perbaikan: Menggunakan id_user bukan id
                 SELECT MAX(id_user) INTO last_id
                 FROM users
                 WHERE id_user LIKE 'U%' AND LENGTH(id_user) = 5;
@@ -98,17 +97,13 @@ return new class extends Migration
                 ELSE
                     SET last_number = CAST(SUBSTRING(last_id, 2) AS UNSIGNED);
                     SET new_id = CONCAT('U', LPAD(last_number + 1, 4, '0'));
-                    
-                    IF last_number >= 9999 THEN
-                        RETURN NULL; 
-                    END IF;
                 END IF;
                 
                 RETURN new_id;
             END;
         ");
 
-        // 5. FUNCTION: GENERATE KODE PROPERTI (P0001)
+        // 5. FUNCTION: GENERATE KODE PROPERTI 
         DB::unprepared("
             DROP FUNCTION IF EXISTS generate_kode_properti;
             CREATE FUNCTION generate_kode_properti() 
@@ -117,35 +112,28 @@ return new class extends Migration
             BEGIN
                 DECLARE last_id VARCHAR(5);
                 DECLARE last_number INT;
-                DECLARE new_number INT;
                 DECLARE new_id VARCHAR(5);
                 
                 SELECT MAX(id_properti) INTO last_id
                 FROM properti
-                WHERE id_properti LIKE 'P%'
-                AND LENGTH(id_properti) = 5;
+                WHERE id_properti LIKE 'P%' AND LENGTH(id_properti) = 5;
                 
                 IF last_id IS NULL THEN
                     SET new_id = 'P0001';
                 ELSE
                     SET last_number = CAST(SUBSTRING(last_id, 2) AS UNSIGNED);
-                    SET new_number = last_number + 1;
-                    SET new_id = CONCAT('P', LPAD(new_number, 4, '0'));
-
-                    IF new_number > 9999 THEN
-                        RETURN NULL;
-                    END IF;
+                    SET new_id = CONCAT('P', LPAD(last_number + 1, 4, '0'));
                 END IF;
                     
                 RETURN new_id;
             END;
         ");
 
-        // 6. FUNCTION: GENERATE KODE TRANSAKSI (TRX-YYMMDD-001)
+        // 6. FUNCTION: GENERATE KODE TRANSAKSI
         DB::unprepared("
             DROP FUNCTION IF EXISTS generate_kd_trx;
             CREATE FUNCTION generate_kd_trx() 
-            RETURNS VARCHAR(20) -- Perbesar size agar muat
+            RETURNS VARCHAR(20)
             DETERMINISTIC
             BEGIN
                 DECLARE v_tanggal VARCHAR(8);
@@ -164,47 +152,10 @@ return new class extends Migration
             END;
         ");
 
-        // 7. FUNCTION: STATUS BOOKING READABLE
+        // 7. FUNCTION: GENERATE ID ADMIN
         DB::unprepared("
-            DROP FUNCTION IF EXISTS status_booking_customer;
-            CREATE FUNCTION status_booking_customer(p_id_trans VARCHAR(20)) 
-            RETURNS VARCHAR(100)
-            DETERMINISTIC
-            BEGIN
-                DECLARE v_status VARCHAR(20);
-                DECLARE v_checkin DATE;
-                DECLARE v_checkout DATE;
-                DECLARE result VARCHAR(100);
-                
-                SELECT status, checkin, checkout 
-                INTO v_status, v_checkin, v_checkout
-                FROM transaksi
-                WHERE id_trans = p_id_trans;
-                
-                CASE v_status
-                    WHEN 'pending' THEN
-                        SET result = 'Menunggu Pembayaran';
-                    WHEN 'lunas' THEN
-                        IF CURDATE() < v_checkin THEN
-                            SET result = 'Booking Dikonfirmasi (Belum Check-in)';
-                        ELSEIF CURDATE() BETWEEN v_checkin AND v_checkout THEN
-                            SET result = 'Sedang Berlangsung';
-                        ELSE
-                            SET result = 'Selesai';
-                        END IF;
-                    WHEN 'batal' THEN
-                        SET result = 'Dibatalkan';
-                    ELSE
-                        SET result = 'Status Tidak Dikenali';
-                END CASE;
-                
-                RETURN result;
-            END;
-            ");
-            DB::unprepared("
             DROP FUNCTION IF EXISTS generate_id_admin;
             CREATE FUNCTION generate_id_admin() 
-            
             RETURNS VARCHAR(5)
             DETERMINISTIC
             BEGIN
@@ -225,7 +176,7 @@ return new class extends Migration
                 
                 RETURN new_id;
             END;
-            ");
+        ");
     }
 
     public function down(): void
@@ -236,7 +187,6 @@ return new class extends Migration
         DB::unprepared("DROP FUNCTION IF EXISTS generate_id_customer");
         DB::unprepared("DROP FUNCTION IF EXISTS generate_kode_properti");
         DB::unprepared("DROP FUNCTION IF EXISTS generate_kd_trx");
-        DB::unprepared("DROP FUNCTION IF EXISTS status_booking_customer");
         DB::unprepared("DROP FUNCTION IF EXISTS generate_id_admin");
     }
 };

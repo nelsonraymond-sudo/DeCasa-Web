@@ -10,18 +10,9 @@ use App\Models\User;
 
 class AuthController extends Controller
 {
-    // --- VIEW ---
-    public function showLogin()
-    {
-        return view('auth.login'); 
-    }
+    public function showLogin() { return view('auth.login'); }
+    public function showRegister() { return view('auth.register'); }
 
-    public function showRegister()
-    {
-        return view('auth.register'); 
-    }
-
-    // --- PROSES LOGIN (Tidak Berubah) ---
     public function processLogin(Request $request)
     {
         $request->validate([
@@ -29,14 +20,10 @@ class AuthController extends Controller
             'password' => 'required',
         ]);
 
-        $credentials = [
-            'email'    => $request->email,
-            'password' => $request->password 
-        ];
+        $credentials = $request->only('email', 'password');
 
         if (Auth::attempt($credentials)) {
             $request->session()->regenerate();
-
             $role = Auth::user()->role;
 
             if ($role === 'admin') { 
@@ -45,54 +32,44 @@ class AuthController extends Controller
                 return redirect()->intended('/'); 
             } else {
                 Auth::logout();
-                return back()->withErrors(['email' => 'Role tidak dikenali.']);
+                return back()->withErrors(['email' => 'Role tidak valid.']);
             }
         }
 
-        return back()->withErrors([
-            'email' => 'Email atau password salah.',
-        ]);
+        return back()->withErrors(['email' => 'Email atau password salah.']);
     }
 
-    // --- PROSES REGISTER (ADMIN) ---
-    // Diubah untuk menangani Form Register Admin sesuai permintaan
     public function processRegister(Request $request)
     {
-        // 1. Validasi Input (Sesuai name di register.blade.php)
         $request->validate([
             'nm_user'  => 'required|max:100',
             'email'    => 'required|email|unique:users,email',
             'no_hp'    => 'required',
-            'password' => 'required|min:6|confirmed', // 'confirmed' akan cek input name="password_confirmation"
+            'password' => 'required|min:6|confirmed', 
         ]);
 
         try {
-            // 2. Generate ID Admin Otomatis (A0001, dst) menggunakan Function Database
-            // Kita pakai function generate_id_admin() yang sudah diperbaiki sebelumnya
-            $newIdObj = DB::select("SELECT generate_id_admin() AS id");
+            $query = DB::select("SELECT generate_id_admin() AS id");
             
-            // Cek jika function mengembalikan hasil
-            if (empty($newIdObj)) {
-                throw new \Exception("Gagal generate ID Admin dari database.");
+            if (empty($query)) {
+                throw new \Exception("Database gagal men-generate ID Admin.");
             }
             
-            $newId = $newIdObj[0]->id;
+            $newId = $query[0]->id;
 
-            // 3. Simpan ke Tabel Users
+    
             User::create([
-                'id_user' => $newId,                  // ID dari function database
-                'nm_user' => $request->nm_user,       // Input dari form
-                'email'   => $request->email,         // Input dari form
-                'pass'    => Hash::make($request->password), // Hashing password
-                'role'    => 'admin',                 // SET ROLE JADI ADMIN
-                'no_hp'   => $request->no_hp,         // Input dari form
+                'id_user' => $newId,         
+                'nm_user' => $request->nm_user,
+                'email'   => $request->email,
+                'pass'    => Hash::make($request->password), 
+                'role'    => 'admin',          
+                'no_hp'   => $request->no_hp,
             ]);
             
-            // 4. Redirect ke Login dengan pesan sukses
-            return redirect()->route('login')->with('success', 'Admin Berhasil Didaftarkan dengan ID: ' . $newId . '. Silakan Login.');
+            return redirect()->route('login')->with('success', "Admin terdaftar dengan ID: $newId. Silakan Login.");
 
         } catch (\Exception $e) {
-            // Jika error, kembalikan ke form register dengan pesan error
             return back()->withErrors(['msg' => 'Gagal Register: ' . $e->getMessage()])->withInput();
         }
     }

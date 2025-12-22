@@ -4,6 +4,9 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin\DashboardController; 
 use App\Http\Controllers\Admin\PropertiController;
 use App\Http\Controllers\Admin\LaporanController;
+use App\Http\Controllers\Admin\FasilitasController;
+use App\Http\Controllers\Admin\CustomerController; 
+use App\Http\Controllers\Admin\SettingController;
 use App\Http\Controllers\AuthController;
 
 Route::get('/', function () {
@@ -38,4 +41,15 @@ Route::middleware(['auth', 'is_admin'])->prefix('admin')->name('admin.')->group(
 
     // Laporan
     Route::get('/laporan', [LaporanController::class, 'index'])->name('laporan.index');
+
+    // Fasilitas
+    Route::get('/fasilitas', [FasilitasController::class, 'index'])->name('fasilitas.index');
+    Route::post('/fasilitas', [FasilitasController::class, 'store'])->name('fasilitas.store');
+    Route::put('/fasilitas/{id}', [FasilitasController::class, 'update'])->name('fasilitas.update');
+    Route::delete('/fasilitas/{id}', [FasilitasController::class, 'destroy'])->name('fasilitas.destroy');
+
+    // Customer
+    Route::get('/customer', [CustomerController::class, 'index'])->name('customer.index');
+    Route::get('/setting', [SettingController::class, 'index'])->name('setting.index');
+    Route::put('/setting', [SettingController::class, 'update'])->name('setting.update');
 });

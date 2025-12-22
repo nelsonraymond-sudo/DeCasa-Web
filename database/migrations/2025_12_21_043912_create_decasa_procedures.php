@@ -200,55 +200,45 @@ return new class extends Migration
             END;
         ");
 
+        // 5. PROCEDURE: ADD PROPERTY 
         DB::unprepared("
             DROP PROCEDURE IF EXISTS add_property;
             
             CREATE PROCEDURE add_property(
-                IN p_admin_id VARCHAR(5) CHARSET utf8mb4 COLLATE utf8mb4_unicode_ci,
-                IN p_kategori VARCHAR(5) CHARSET utf8mb4 COLLATE utf8mb4_unicode_ci,
-                IN p_nama VARCHAR(100) CHARSET utf8mb4 COLLATE utf8mb4_unicode_ci,
-                IN p_desc TEXT CHARSET utf8mb4 COLLATE utf8mb4_unicode_ci,
-                IN p_alamat TEXT CHARSET utf8mb4 COLLATE utf8mb4_unicode_ci,
+                IN p_admin_id VARCHAR(5),
+                IN p_kategori VARCHAR(5),
+                IN p_nama VARCHAR(100),
+                IN p_desc TEXT,
+                IN p_alamat TEXT,
                 IN p_harga DECIMAL(12,2)
             )
             BEGIN
-                DECLARE v_id_properti VARCHAR(5) CHARSET utf8mb4 COLLATE utf8mb4_unicode_ci;
-                DECLARE v_is_admin INT;
-                DECLARE last_no INT;
+                DECLARE v_id_properti VARCHAR(5);
                 
-                -- Cek apakah user adalah Admin
-                SELECT COUNT(*) INTO v_is_admin FROM users WHERE id_user = p_admin_id AND role = 'admin';
+                DECLARE EXIT HANDLER FOR SQLEXCEPTION
+                BEGIN
+                    ROLLBACK;
+                    RESIGNAL;
+                END;
 
-                IF v_is_admin = 0 THEN
-                    -- Jika bukan admin, return pesan error (opsional: bisa signal sqlstate)
-                    SELECT 'ERROR: Hanya admin yang dapat menambah properti' AS message;
-                ELSE
-                    START TRANSACTION;
-                    
-                    -- Logic Generate ID Properti (Pxxx)
-                    SELECT CAST(SUBSTRING(id_properti, 2) AS UNSIGNED) INTO last_no
-                    FROM properti 
-                    WHERE id_properti LIKE 'P%' 
-                    ORDER BY CAST(SUBSTRING(id_properti, 2) AS UNSIGNED) DESC 
-                    LIMIT 1;
-
-                    IF last_no IS NULL THEN
-                        SET v_id_properti = 'P0001';
-                    ELSE
-                        SET v_id_properti = CONCAT('P', LPAD(last_no + 1, 4, '0'));
-                    END IF;
-                    
-                    -- Insert Data
-                    INSERT INTO properti (
-                        id_properti, id_user, id_kategori, nm_properti, 
-                        deskripsi, alamat, harga, status, created_at
-                    ) VALUES (
-                        v_id_properti, p_admin_id, p_kategori, p_nama,
-                        p_desc, p_alamat, p_harga, 'tersedia', now()
-                    );
-                    
-                    SELECT v_id_properti AS id_properti, 'SUCCESS' as message;
-                END IF;
+                START TRANSACTION;
+                
+                -- Panggil Function generate_kode_properti yang sudah dibuat di migration sebelumnya
+                SET v_id_properti = generate_kode_properti();
+                
+                -- Insert Data
+                INSERT INTO properti (
+                    id_properti, id_user, id_kategori, nm_properti, 
+                    deskripsi, alamat, harga, status, created_at, updated_at
+                ) VALUES (
+                    v_id_properti, p_admin_id, p_kategori, p_nama,
+                    p_desc, p_alamat, p_harga, 'available', NOW(), NOW()
+                );
+                
+                COMMIT;
+                
+                -- RETURN ID BARU DENGAN NAMA KOLOM 'id_properti' (PENTING BUAT CONTROLLER)
+                SELECT v_id_properti AS id_properti, 'SUCCESS' as message;
             END;
         ");
     

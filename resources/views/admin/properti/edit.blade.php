@@ -13,7 +13,6 @@
                 @csrf
                 @method('PUT') 
                 
-                {{-- FORM DATA TEKS (Sama seperti sebelumnya) --}}
                 <div class="mb-3">
                     <label class="form-label text-muted small fw-bold">PROPERTY NAME</label>
                     <input type="text" name="nm_properti" class="form-control" value="{{ old('nm_properti', $properti->nm_properti) }}" required>
@@ -38,10 +37,14 @@
                         <input type="number" name="harga" class="form-control" value="{{ old('harga', $properti->harga) }}" required>
                     </div>
                     <div class="col-md-6 mb-3">
-                        <label class="form-label text-muted small fw-bold">STATUS</label>
-                        <select name="status" class="form-select">
-                            <option value="tersedia" {{ $properti->status == 'tersedia' ? 'selected' : '' }}>Tersedia</option>
-                            <option value="terisi" {{ $properti->status != 'tersedia' ? 'selected' : '' }}>Terisi</option>
+                        <label for="status">Status Property</label>
+                        <select name="status" id="status" class="form-control" required>
+                            <option value="available" {{ $properti->status == 'available' ? 'selected' : '' }}>
+                                Available
+                            </option>
+                            <option value="full" {{ $properti->status == 'full' ? 'selected' : '' }}>
+                                Full
+                            </option>
                         </select>
                     </div>
                 </div>
@@ -77,30 +80,25 @@
                     </div>
                 </div>
 
-                {{-- === BAGIAN BARU: MANAJEMEN FOTO === --}}
                 <div class="mb-4">
                     <label class="form-label text-muted small fw-bold d-block">MANAGE PHOTOS</label>
                     
-                    {{-- 1. Upload Foto Baru --}}
                     <div class="mb-3">
                         <label class="small text-muted">Add New Photos:</label>
                         <input type="file" name="new_fotos[]" class="form-control" multiple accept="image/*">
                         <div class="form-text">You can select multiple files to add to the gallery.</div>
                     </div>
 
-                    {{-- 2. List Foto Lama (Galeri) --}}
                     @if(isset($fotos) && count($fotos) > 0)
                         <label class="small text-muted mb-2">Existing Gallery (Check to DELETE):</label>
                         <div class="row g-2">
                             @foreach($fotos as $foto)
                                 <div class="col-md-3 col-4 text-center">
                                     <div class="border p-1 position-relative bg-light">
-                                        {{-- Tampilkan Gambar --}}
                                         <img src="{{ Str::startsWith($foto->url_foto, 'http') ? $foto->url_foto : asset('storage/' . $foto->url_foto) }}" 
                                              class="img-fluid" 
                                              style="height: 80px; width: 100%; object-fit: cover;">
                                         
-                                        {{-- Checkbox Hapus --}}
                                         <div class="mt-1">
                                             <input type="checkbox" name="delete_fotos[]" 
                                                    value="{{ $foto->url_foto }}" 
@@ -118,7 +116,6 @@
                         <div class="alert alert-warning small py-2">No photos available for this property.</div>
                     @endif
                 </div>
-                {{-- === END BAGIAN FOTO === --}}
 
                 <hr>
 

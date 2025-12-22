@@ -15,14 +15,13 @@ class BookingController extends Controller
             'id_properti' => 'required',
             'checkin'     => 'required|date|after_or_equal:today',
             'checkout'    => 'required|date|after:checkin',
-            'id_metode'   => 'required' // Pastikan ada input metode bayar
+            'id_metode'   => 'required'
         ]);
 
         try {
-            $userId = Auth::user()->id_user; // Pastikan user login
+            $userId = Auth::user()->id_user; 
 
-            // Panggil Stored Procedure: create_booking
-            // Urutan param: p_id_user, p_id_properti, p_checkin, p_checkout, p_id_metode
+            
             $result = DB::select('CALL create_booking(?, ?, ?, ?, ?)', [
                 $userId,
                 $request->id_properti,
@@ -31,19 +30,19 @@ class BookingController extends Controller
                 $request->id_metode
             ]);
 
-            // Ambil pesan dari procedure (SELECT ... AS message)
             $response = $result[0];
 
-            if (str_contains($response->message, 'ERROR')) {
-                return back()->with('error', $response->message);
+            if (isset($response->message) && str_contains($response->message, 'ERROR')) {
+                return back()->with('error', $response->message)->withInput();
             }
 
-            // Jika sukses, redirect ke halaman sukses/pembayaran
-            return redirect()->route('customer.booking.success', ['id' => $response->id_transaksi])
+            $newTrxId = $response->id_transaksi ?? null;
+
+            return redirect()->route('customer.booking.success', ['id' => $newTrxId])
                              ->with('success', $response->message);
 
         } catch (\Exception $e) {
-            return back()->with('error', 'Terjadi kesalahan sistem: ' . $e->getMessage());
+            return back()->with('error', 'Gagal memproses booking: ' . $e->getMessage());
         }
     }
 }

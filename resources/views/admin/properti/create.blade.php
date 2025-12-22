@@ -85,11 +85,10 @@
                 <div class="mb-4">
     <label class="form-label text-muted small fw-bold">PROPERTY IMAGES</label>
     
-    {{-- Input Multiple --}}
     <input type="file" name="fotos[]" id="inputFotos" class="form-control" multiple accept="image/*" required>
     
     <div class="form-text">
-       Select multiple photos at once. The first photo will be the main thumbnail. (Max: 2MB/photo)
+       Select multiple photos at once. The first photo will be the main thumbnail.
     </div>
 
     <div class="d-flex flex-wrap gap-2 mt-3" id="preview-container"></div>
@@ -98,7 +97,7 @@
 <script>
     document.getElementById('inputFotos').addEventListener('change', function(event) {
         const container = document.getElementById('preview-container');
-        container.innerHTML = ''; // Bersihkan preview lama
+        container.innerHTML = ''; 
         
         Array.from(event.target.files).forEach(file => {
             const reader = new FileReader();
@@ -117,7 +116,6 @@
 </script>
 
                 <hr>
-
                 <div class="d-flex justify-content-end gap-2">
                     <a href="{{ route('admin.properti.manage') }}" class="btn btn-outline-secondary px-4">Cancel</a>
                     <button type="submit" class="btn btn-primary px-5">Save Property</button>

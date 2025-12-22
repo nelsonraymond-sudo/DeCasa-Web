@@ -6,7 +6,7 @@
 <div class="card border-0 shadow-sm">
     <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
         <div>
-            <h6 class="m-0 fw-bold text-muted">DATA TRANSAKSI</h6>
+            <h6 class="m-0 fw-bold text-muted">Transaction Data</h6>
         </div>
         <button class="btn btn-sm btn-outline-primary" onclick="window.print()">Print PDF</button>
     </div>
@@ -16,10 +16,10 @@
             <table class="table table-hover table-striped mb-0 align-middle">
                 <thead class="bg-light text-secondary text-uppercase small fw-bold">
                     <tr>
-                        <th class="py-3 ps-4">ID Transaksi</th>
-                        <th class="py-3">Tanggal</th>
+                        <th class="py-3 ps-4">ID Transaction</th>
+                        <th class="py-3">Date</th>
                         <th class="py-3">Customer</th>
-                        <th class="py-3">Properti</th>
+                        <th class="py-3">Property</th>
                         <th class="py-3">Status</th> 
                         <th class="py-3 text-end pe-4">Nominal</th>
                     </tr>
@@ -27,21 +27,17 @@
                 <tbody>
                     @forelse($laporan as $l)
                     <tr>
-                        {{-- PERBAIKAN 1: id_trans diganti id_transaksi --}}
                         <td class="ps-4 fw-bold text-primary">#{{ $l->id_transaksi }}</td>
                         
-                        {{-- PERBAIKAN 2: tgl_trans diganti tanggal_book --}}
                         <td>{{ date('d/m/Y', strtotime($l->tanggal_book)) }}</td>
                         
                         <td>
                             <div class="fw-bold text-dark">{{ $l->nama_customer }}</div>
                         </td>
                         
-                        {{-- PERBAIKAN 3: nm_properti diganti nama_properti --}}
                         <td>{{ $l->nama_properti }}</td>
 
                         <td>
-                            {{-- Catatan: Status di view mengambil raw data (pending/lunas/batal) --}}
                             @if($l->status == 'lunas')
                                 <span class="badge bg-success">Lunas</span>
                             @elseif($l->status == 'pending')
@@ -62,7 +58,7 @@
                         <td colspan="6" class="text-center py-5 text-muted">
                             <div class="d-flex flex-column align-items-center">
                                 <i class="bi bi-file-earmark-x fs-1 mb-2"></i>
-                                <span>Belum ada data transaksi.</span>
+                                <span>There is no transaction data yet.</span>
                             </div>
                         </td>
                     </tr>

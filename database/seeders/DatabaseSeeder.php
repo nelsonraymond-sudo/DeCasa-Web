@@ -11,7 +11,7 @@ class DatabaseSeeder extends Seeder
 {
     public function run()
     {
-        // 1. DATA USER (Admin & Customer)
+        // 1. DATA USER 
         DB::table('users')->insert([
             [
                 'id_user'   => 'A0001',
@@ -57,7 +57,7 @@ class DatabaseSeeder extends Seeder
             ['id_fasilitas' => 'F0005', 'nm_fasilitas' => 'Keamanan 24 Jam', 'created_at'=> now(), 'updated_at'=> now()],
         ]);
 
-        // 4. DATA PAYMENT (Metode Pembayaran)
+        // 4. DATA PAYMENT 
 
         DB::table('payment')->insert([
             ['id_metode' => 'PY001', 'nama_bank' => 'BCA', 'no_rekening' => '1234567890', 'atas_nama' => 'PT DeCasa Properti', 'created_at'=> now(), 'updated_at'=> now()],
@@ -129,12 +129,12 @@ class DatabaseSeeder extends Seeder
                 'id_user'     => 'U0001', 
                 'id_properti' => 'P0001', 
                 'id_metode'   => 'PY001', 
-                'tgl_trans'   => Carbon::now()->subDays(5), 
-                'checkin'     => Carbon::now()->subDays(3)->format('Y-m-d'),
-                'checkout'    => Carbon::now()->subDays(1)->format('Y-m-d'),
+                'tgl_trans'   => Carbon::now(), 
+                'checkin'     => Carbon::now()->addDays(1)->format('Y-m-d'), 
+                'checkout'    => Carbon::now()->addDays(2)->format('Y-m-d'),
                 'durasi'      => 2,
                 'total_harga' => 3000000.00, 
-                'status'      => 'selesai',
+                'status'      => 'lunas',
                 'created_at'  => now(), 'updated_at'=> now()
             ],
             [
