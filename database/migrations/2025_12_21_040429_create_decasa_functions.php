@@ -42,42 +42,45 @@ return new class extends Migration
 
         // 3. FUNCTION: CEK KETERSEDIAAN
         DB::unprepared("
-            DROP FUNCTION IF EXISTS cek_ketersediaan;
-            CREATE FUNCTION cek_ketersediaan(p_id_properti VARCHAR(5), p_checkin DATE, p_checkout DATE) 
-            RETURNS VARCHAR(20)
-            DETERMINISTIC
-            BEGIN
-                DECLARE v_status_properti VARCHAR(20);
-                DECLARE count_bentrok INT;
+        -- BAGIAN 1: FUNCTION CEK KETERSEDIAAN
+        DROP FUNCTION IF EXISTS cek_ketersediaan;
+        
+        CREATE FUNCTION cek_ketersediaan(
+            -- KITA PAKSA PARAMETER AGAR SAMA DENGAN TABEL
+            p_id_properti VARCHAR(5) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci, 
+            p_checkin DATE, 
+            p_checkout DATE
+        ) 
+        RETURNS VARCHAR(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci
+        DETERMINISTIC
+        BEGIN
+            DECLARE v_status_properti VARCHAR(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
+            DECLARE count_bentrok INT;
 
-                SELECT status INTO v_status_properti
-                FROM properti
-                WHERE id_properti = p_id_properti;
+            -- Ambil status properti
+            SELECT status INTO v_status_properti
+            FROM properti
+            WHERE id_properti = p_id_properti; -- Aman karena p_id_properti sudah diset general_ci
 
-                IF v_status_properti = 'penuh' THEN
-                    RETURN 'tidak_tersedia';
-                END IF;
-                
-                SELECT COUNT(*) INTO count_bentrok
-                FROM transaksi
-                WHERE id_properti = p_id_properti
-                AND status IN ('lunas', 'pending')
-                AND (
-                    (p_checkin BETWEEN checkin AND checkout) OR
-                    (p_checkout BETWEEN checkin AND checkout) OR
-                    (checkin BETWEEN p_checkin AND p_checkout) OR
-                    (checkout BETWEEN p_checkin AND p_checkout)
-                );
-                  
-                IF count_bentrok > 0 THEN
-                    RETURN 'tidak_tersedia';
-                ELSE
-                    RETURN 'tersedia';
-                END IF;
-            END;
-        ");
+            -- Cek bentrok tanggal
+            SELECT COUNT(*) INTO count_bentrok
+            FROM transaksi
+            WHERE id_properti = p_id_properti -- Aman
+            AND status IN ('lunas', 'pending')
+            AND status != 'batal'
+            AND (
+                (p_checkin < checkout AND p_checkout > checkin)
+            );
+            
+            IF count_bentrok > 0 THEN
+                RETURN 'penuh';
+            ELSE
+                RETURN 'tersedia'; 
+            END IF;
+        END;
+    ");
 
-        // 4. FUNCTION: GENERATE ID CUSTOMER (U0001)
+        // 4. FUNCTION: GENERATE ID CUSTOMER
         DB::unprepared("
             DROP FUNCTION IF EXISTS generate_id_customer;
             CREATE FUNCTION generate_id_customer() 
@@ -131,27 +134,41 @@ return new class extends Migration
 
         // 6. FUNCTION: GENERATE KODE TRANSAKSI
         DB::unprepared("
-            DROP FUNCTION IF EXISTS generate_kd_trx;
-            CREATE FUNCTION generate_kd_trx() 
-            RETURNS VARCHAR(20)
-            DETERMINISTIC
-            BEGIN
-                DECLARE v_tanggal VARCHAR(8);
-                DECLARE urutan INT;
-                DECLARE kode VARCHAR(20);
-                
-                SET v_tanggal = DATE_FORMAT(CURDATE(), '%y%m%d');
-                
-                SELECT COUNT(*) + 1 INTO urutan
-                FROM transaksi
-                WHERE DATE(created_at) = CURDATE();
-                
-                SET kode = CONCAT('TRX-', v_tanggal, '-', LPAD(urutan, 3, '0'));
-                
-                RETURN kode;
-            END;
-        ");
+    DROP FUNCTION IF EXISTS generate_kd_trx;
+    CREATE FUNCTION generate_kd_trx()
+    RETURNS VARCHAR(20)
+    DETERMINISTIC
+    BEGIN
+        DECLARE v_tanggal VARCHAR(8);
+        DECLARE urutan INT;
+        DECLARE kode VARCHAR(13);
+        DECLARE max_id VARCHAR(13);
 
+        -- 1. Ambil tanggal hari ini (Format: 251227)
+        SET v_tanggal = DATE_FORMAT(CURDATE(), '%y%m%d');
+
+        -- 2. Cari ID paling besar hari ini (Logic MAX, bukan COUNT)
+        -- Kita pakai COLLATE agar tidak error 'Illegal mix of collations'
+        SELECT MAX(id_trans) INTO max_id
+        FROM transaksi
+        WHERE id_trans COLLATE utf8mb4_general_ci LIKE CONCAT('TRX', v_tanggal, '-%') COLLATE utf8mb4_general_ci;
+
+        -- 3. Cek Logic Urutan
+        IF max_id IS NULL THEN
+            -- Jika belum ada transaksi hari ini, mulai dari 1
+            SET urutan = 1;
+        ELSE
+            -- Jika sudah ada, ambil angka di belakang (mulai karakter ke-11)
+            -- Contoh: TRX251227-005 -> ambil '005' -> jadi 5 -> tambah 1 = 6
+            SET urutan = CAST(SUBSTRING(max_id, 11) AS UNSIGNED) + 1;
+        END IF;
+
+        -- 4. Gabungkan (Padding 0 di depan angka)
+        SET kode = CONCAT('TRX', v_tanggal, '-', LPAD(urutan, 3, '0'));
+
+        RETURN kode;
+    END
+");
         // 7. FUNCTION: GENERATE ID ADMIN
         DB::unprepared("
             DROP FUNCTION IF EXISTS generate_id_admin;

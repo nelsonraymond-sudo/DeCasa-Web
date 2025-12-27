@@ -59,7 +59,7 @@
     <div class="card card-login p-5">
         <div class="text-center mb-4">
             <h3 class="logo-text mb-2">New Account</h3>
-            <p class="text-muted small">Register a new administrator account</p>
+            <p class="text-muted small">Register a new account</p>
         </div>
 
         <form action="{{ route('register.process') }}" method="POST">

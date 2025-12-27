@@ -99,22 +99,20 @@ return new class extends Migration
                     SET MESSAGE_TEXT = 'Tanggal checkout harus setelah tanggal checkin';
                 END IF;
                 
-                -- Validasi 2: Checkin tidak boleh masa lalu
+                -- Validasi 2: Checkin tidak boleh masa lalu (Hati-hati Timezone DB!)
                 IF NEW.checkin < CURDATE() THEN
                     SIGNAL SQLSTATE '45000'
                     SET MESSAGE_TEXT = 'Tanggal checkin tidak boleh di masa lalu';
                 END IF;
                 
-                -- Validasi 3: Cek tabrakan jadwal
+                -- Validasi 3: Cek tabrakan jadwal (LOGIC FIX)
                 SELECT COUNT(*) INTO tabrakan
                 FROM transaksi
                 WHERE id_properti = NEW.id_properti
-                  AND status IN ('pending', 'lunas')
-                  AND (
-                      (NEW.checkin BETWEEN checkin AND checkout) OR
-                      (NEW.checkout BETWEEN checkin AND checkout) OR
-                      (checkin BETWEEN NEW.checkin AND NEW.checkout)
-                  );
+                AND status IN ('pending', 'lunas')
+                AND (
+                    NEW.checkin < checkout AND NEW.checkout > checkin
+                );
                 
                 IF tabrakan > 0 THEN
                     SIGNAL SQLSTATE '45000'

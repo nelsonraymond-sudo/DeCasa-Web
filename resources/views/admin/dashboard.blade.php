@@ -9,7 +9,7 @@
             <div class="d-flex justify-content-between align-items-start">
                 <div>
                     <p class="text-muted text-uppercase small fw-bold mb-1">Total Unit</p>
-                    <h2 class="fw-bold text-dark m-0">{{ $totalProperti }}</h2>
+                    <h2 class="fw-bold text-dark m-0">{{ $totalUnit }}</h2>
                 </div>
             </div>
         </div>
@@ -20,7 +20,7 @@
             <div class="d-flex justify-content-between align-items-start">
                 <div>
                     <p class="text-muted text-uppercase small fw-bold mb-1">Available</p>
-                    <h2 class="fw-bold text-success m-0">{{ $propertiTersedia }}</h2>
+                    <h2 class="fw-bold text-success m-0">{{ $available }}</h2>
                 </div>
             </div>
         </div>
@@ -31,7 +31,7 @@
             <div class="d-flex justify-content-between align-items-start">
                 <div>
                     <p class="text-muted text-uppercase small fw-bold mb-1">Occupied</p>
-                    <h2 class="fw-bold text-secondary m-0">{{ $propertiTerisi }}</h2>
+                    <h2 class="fw-bold text-secondary m-0">{{ $occupied }}</h2>
                 </div>
             </div>
         </div>
@@ -42,7 +42,7 @@
             <div class="d-flex justify-content-between align-items-start">
                 <div>
                     <p class="text-muted text-uppercase small fw-bold mb-1">Total Revenue</p>
-                    <h4 class="fw-bold text-dark m-0">Rp {{ number_format($totalPendapatan, 0, ',', '.') }}</h4>
+                    <h4 class="fw-bold text-dark m-0">Rp {{ number_format($revenue, 0, ',', '.') }}</h4>
                 </div>
             </div>
         </div>

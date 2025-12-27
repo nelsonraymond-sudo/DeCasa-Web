@@ -26,7 +26,8 @@ class CustomerController extends Controller
                     SELECT COALESCE(SUM(vh.total_harga), 0) 
                     FROM view_booking_history vh 
                     WHERE vh.id_user = u.id_user 
-                    AND vh.status IN ('lunas', 'selesai')
+                    -- UBAH BAGIAN INI: --
+                    AND vh.status IN ('lunas', 'Lunas', 'selesai', 'Selesai')
                 ) as total_spent
             FROM users u
             WHERE u.role = 'customer'

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login - DeCasa Admin</title>
+    <title>Login - DeCasa</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     
     <style>
@@ -57,8 +57,8 @@
 
     <div class="card card-login p-5">
         <div class="text-center mb-4">
-            <h3 class="logo-text mb-2">DeCasa Dahboard</h3>
-            <p class="text-muted small">Sign in to manage your dashboard</p>
+            <h3 class="logo-text mb-2">DeCasa</h3>
+            <p class="text-muted small">Sign in to your account</p>
         </div>
 
         @if($errors->any())
@@ -90,7 +90,7 @@
 
             <div class="text-center">
                 <a href="{{ route('register') }}" class="text-muted small text-decoration-none">
-                    Create new admin account? <span class="fw-bold" style="color: var(--sage-primary)">Register</span>
+                    Create new account? <span class="fw-bold" style="color: var(--sage-primary)">Register</span>
                 </a>
             </div>
         </form>

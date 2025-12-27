@@ -12,14 +12,13 @@ class PropertiController extends Controller
 {
     public function index()
     {
-        $properti = DB::table('properti')
-            ->join('kategori', 'properti.id_kategori', '=', 'kategori.id_kategori')
-            ->select('properti.*', 'kategori.nm_kategori as nama_kategori')
-            ->orderBy('properti.created_at', 'desc')
-            ->get();
+        $properti = DB::table('view_detail_properti')
+                ->orderBy('id_properti', 'desc') 
+                ->get();
 
-        return view('admin.properti.index', compact('properti'));
-    }
+    return view('admin.properti.index', compact('properti'));
+}
+    
 
     public function manage()
     {
@@ -49,7 +48,7 @@ class PropertiController extends Controller
             'alamat'      => 'required',
             'status'      => 'required',
             'fotos'       => 'required|array|min:1',
-            'fotos.*'     => 'image|mimes:jpeg,png,jpg,gif|max:2048',
+            'fotos.*'     => 'image|mimes:jpeg,png,jpg,gif|max:5000',
         ]);
 
         try {
@@ -159,7 +158,7 @@ class PropertiController extends Controller
             'deskripsi'   => 'required',
             'alamat'      => 'required',
             'status'      => 'required',
-            'new_fotos.*' => 'image|mimes:jpeg,png,jpg,gif|max:2048',
+            'new_fotos.*' => 'image|mimes:jpeg,png,jpg,gif|max:5000',
         ]);
 
         try {

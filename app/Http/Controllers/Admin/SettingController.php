@@ -21,18 +21,22 @@ class SettingController extends Controller
         $user = Auth::user();
 
         $request->validate([
-            'nm_user' => 'required|string|max:100',
-            'email'   => 'required|email',
-            'no_hp'   => 'required|string|max:20',
-            'password'=> 'nullable|min:6|confirmed'
+            'nm_user'  => 'required|string|max:100',
+            'email'    => 'required|email',
+            'no_hp'    => 'required|string|max:20',
+            'password' => 'nullable|min:6|confirmed' 
         ]);
 
         try {
             if ($request->filled('password')) {
                 DB::table('users')
                     ->where('id_user', $user->id_user)
-                    ->update(['password' => Hash::make($request->password)]);
+                    ->update([
+                        'pass' => Hash::make($request->password), 
+                        'updated_at' => now()
+                    ]);
             }
+
             $result = DB::select("CALL update_profile(?, ?, ?, ?)", [
                 $user->id_user,
                 $request->nm_user,

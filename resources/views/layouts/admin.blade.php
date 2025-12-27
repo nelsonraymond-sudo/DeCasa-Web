@@ -123,6 +123,10 @@
                 Property List
             </a>
 
+            <a href="{{ route('admin.transaksi.index') }}" class="nav-link {{ Request::routeIs('admin.transaksi.index') ? 'active' : '' }}">
+                Transaction
+            </a>
+
             {{-- Manage --}}
             <a href="{{ route('admin.properti.manage') }}" class="nav-link {{ Request::routeIs('admin.properti.manage') ? 'active' : '' }}">
                 Manage

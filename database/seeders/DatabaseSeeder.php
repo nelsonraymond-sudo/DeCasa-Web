@@ -15,11 +15,11 @@ class DatabaseSeeder extends Seeder
         DB::table('users')->insert([
             [
                 'id_user'   => 'A0001',
-                'nm_user'   => 'Admin',
+                'nm_user'   => 'DeCasa',
                 'email'     => 'admin@decasa.com',
                 'pass'      => Hash::make('admin123'),
                 'role'      => 'admin',
-                'no_hp'     => '081299998888',
+                'no_hp'     => '08990991531',
                 'created_at'=> now(), 'updated_at'=> now()
             ],
             [
@@ -131,7 +131,7 @@ class DatabaseSeeder extends Seeder
                 'id_metode'   => 'PY001', 
                 'tgl_trans'   => Carbon::now(), 
                 'checkin'     => Carbon::now()->addDays(1)->format('Y-m-d'), 
-                'checkout'    => Carbon::now()->addDays(2)->format('Y-m-d'),
+                'checkout'    => Carbon::now()->addDays(3)->format('Y-m-d'),
                 'durasi'      => 2,
                 'total_harga' => 3000000.00, 
                 'status'      => 'lunas',

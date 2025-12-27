@@ -10,6 +10,17 @@
                 <h6 class="mb-0 fw-bold"><i class="bi bi-person-gear me-2"></i>Edit My Profile</h6>
             </div>
             <div class="card-body p-4">
+    
+                @if ($errors->any())
+                    <div class="alert alert-danger">
+                        <ul class="mb-0">
+                            @foreach ($errors->all() as $error)
+                                <li>{{ $error }}</li>
+                            @endforeach
+                        </ul>
+                    </div>
+                @endif
+
                 <form action="{{ route('admin.setting.update') }}" method="POST">
                     @csrf
                     @method('PUT')

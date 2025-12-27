@@ -12,7 +12,7 @@ return new class extends Migration
     public function up()
 {
     Schema::create('transaksi', function (Blueprint $table) {
-        $table->string('id_trans', 10)->primary();
+        $table->string('id_trans', 13)->primary();
         $table->string('id_user', 5);
         $table->string('id_properti', 5);
         $table->string('id_metode', 5);

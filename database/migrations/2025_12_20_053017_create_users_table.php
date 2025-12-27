@@ -15,7 +15,7 @@ return new class extends Migration
         $table->string('id_user', 5)->primary();
         $table->string('nm_user', 100);
         $table->string('email', 100)->unique();
-        $table->string('pass'); // Nanti di Laravel sebaiknya diganti 'password' agar standar
+        $table->string('pass'); 
         $table->enum('role', ['admin', 'customer']);
         $table->string('no_hp', 20);
         $table->timestamps();

@@ -8,121 +8,126 @@ return new class extends Migration
     public function up(): void
     {
         // 1. PROCEDURE: BATALKAN TRANSAKSI
-        DB::unprepared("
-            DROP PROCEDURE IF EXISTS cancel_booking;
-            CREATE PROCEDURE cancel_booking(
-                IN p_id_trans VARCHAR(20),
-                IN p_alasan VARCHAR(255)
-            )
-            BEGIN
-                DECLARE v_status VARCHAR(20);
-                DECLARE v_id_properti VARCHAR(5);
-                DECLARE v_checkin DATE;
-                
-                DECLARE EXIT HANDLER FOR SQLEXCEPTION
-                BEGIN
-                    ROLLBACK;
-                    SELECT 'ERROR: Terjadi kesalahan sistem' AS message;
-                END;
-                
-                START TRANSACTION;
-                
-                SELECT status, id_properti, checkin 
-                INTO v_status, v_id_properti, v_checkin
-                FROM transaksi
-                WHERE id_trans = p_id_trans;
-                
-                IF v_status IS NULL THEN
-                    SELECT 'ERROR: Booking tidak ditemukan' AS message;
-                    ROLLBACK;
-                ELSEIF v_status = 'batal' THEN
-                    SELECT 'ERROR: Booking sudah dibatalkan sebelumnya' AS message;
-                    ROLLBACK;
-                ELSEIF v_status = 'lunas' AND DATEDIFF(v_checkin, CURDATE()) < 2 THEN
-                    SELECT 'ERROR: Tidak dapat membatalkan booking H-2 check-in' AS message;
-                    ROLLBACK;
-                ELSE
-                    -- Perbaikan: Menggunakan tabel transaksi
-                    UPDATE transaksi 
-                    SET status = 'batal' 
-                    WHERE id_trans = p_id_trans;
-                    
-                    UPDATE properti 
-                    SET status = 'tersedia' 
-                    WHERE id_properti = v_id_properti;
-                    
-                    COMMIT;
-                    SELECT 'SUCCESS: Transaksi berhasil dibatalkan' AS message;
-                END IF;
-            END;
-        ");
+       DB::unprepared("
+    DROP PROCEDURE IF EXISTS cancel_booking;
 
-        // 2. PROCEDURE: BOOKING PROPERTI
-        DB::unprepared("
-            DROP PROCEDURE IF EXISTS create_booking;
-            CREATE PROCEDURE create_booking(
-                IN p_id_user VARCHAR(5),
-                IN p_id_properti VARCHAR(5),
-                IN p_checkin DATE,
-                IN p_checkout DATE,
-                IN p_id_metode VARCHAR(5)
-            )
-            proc_label: BEGIN  
-                DECLARE v_durasi INT;
-                DECLARE v_total DECIMAL(12,2);
-                DECLARE v_availability VARCHAR(20);
-                DECLARE v_id_trans VARCHAR(20);
-                DECLARE v_harga DECIMAL(12,2);
-                
-                DECLARE EXIT HANDLER FOR SQLEXCEPTION
-                BEGIN
-                    ROLLBACK;
-                    SELECT 'ERROR: Gagal memproses booking' AS message;
-                END;
-                
-                START TRANSACTION;
+    CREATE PROCEDURE cancel_booking(
+        -- PERBAIKAN: Tambahkan 'CHARACTER SET utf8mb4' sebelum COLLATE
+        IN p_id_trans VARCHAR(13) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci,
+        IN p_alasan VARCHAR(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci
+    )
+    BEGIN
+        DECLARE v_status VARCHAR(20);
+        DECLARE v_checkin DATE;
+        
+        -- SAYA TETAP MATIKAN HANDLER INI AGAR KITA BISA LIHAT ERROR ASLINYA NANTI
+        /* DECLARE EXIT HANDLER FOR SQLEXCEPTION
+        BEGIN
+            ROLLBACK;
+            SELECT 'ERROR: Terjadi kesalahan sistem' AS message;
+        END; 
+        */
+        
+        START TRANSACTION;
+        
+        -- Cek status transaksi
+        SELECT status, checkin INTO v_status, v_checkin
+        FROM transaksi
+        WHERE id_trans = p_id_trans;
+        
+        IF v_status IS NULL THEN
+            SELECT 'ERROR: Booking tidak ditemukan' AS message;
+            ROLLBACK;
+        ELSEIF v_status = 'batal' THEN
+            SELECT 'ERROR: Booking sudah dibatalkan sebelumnya' AS message;
+            ROLLBACK;
+        ELSEIF v_status = 'lunas' AND DATEDIFF(v_checkin, CURDATE()) < 2 THEN
+            SELECT 'ERROR: Tidak dapat membatalkan booking H-2 check-in' AS message;
+            ROLLBACK;
+        ELSE
+            -- Update status jadi batal
+            UPDATE transaksi 
+            SET status = 'batal', 
+                updated_at = NOW() 
+            WHERE id_trans = p_id_trans;
+            
+            COMMIT;
+            SELECT 'SUCCESS: Transaksi berhasil dibatalkan' AS message;
+        END IF;
+    END;
+");
+                // 2. PROCEDURE: BOOKING PROPERTI
+     DB::unprepared("
+    DROP PROCEDURE IF EXISTS create_booking;
+    
+    CREATE PROCEDURE create_booking(
+        IN p_id_user VARCHAR(5) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci,
+        IN p_id_properti VARCHAR(5) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci,
+        IN p_checkin DATE,
+        IN p_checkout DATE,
+        IN p_id_metode VARCHAR(5) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci
+    )
+    proc_label: BEGIN  
+        DECLARE v_durasi INT;
+        DECLARE v_total DECIMAL(12,2);
+        
+        -- Samakan collation variabel lokal
+        DECLARE v_availability VARCHAR(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
+        DECLARE v_id_trans VARCHAR(13) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
+        DECLARE v_harga DECIMAL(12,2);
+        
+        -- Handler jika terjadi error SQL, otomatis Rollback
+        DECLARE EXIT HANDLER FOR SQLEXCEPTION 
+        BEGIN
+            ROLLBACK;
+            SELECT 'ERROR: Terjadi kesalahan database saat booking.' AS message;
+        END;
 
-                -- 1. Cek Ketersediaan
-                SET v_availability = cek_ketersediaan(p_id_properti, p_checkin, p_checkout);
-                
-                IF v_availability != 'tersedia' THEN
-                    SELECT 'ERROR: Properti tidak tersedia pada tanggal tersebut' AS message;
-                    ROLLBACK;
-                    LEAVE proc_label;
-                END IF;
-                
-                -- 2. Ambil Harga
-                SELECT harga INTO v_harga FROM properti WHERE id_properti = p_id_properti;
-                
-                -- 3. Hitung Durasi & Total
-                SET v_durasi = hitung_durasi(p_checkin, p_checkout);
-                SET v_total = v_harga * v_durasi;
-                
-                -- 4. Generate ID Transaksi
-                SET v_id_trans = generate_kd_trx();
-                
-                -- 5. Insert Data
-                 INSERT INTO transaksi (
-                    id_trans, id_user, id_properti, id_metode, 
-                    tgl_trans, checkin, checkout, durasi, total_harga, status, created_at
-                ) VALUES (
-                    v_id_trans, p_id_user, p_id_properti, p_id_metode,
-                    NOW(), p_checkin, p_checkout, v_durasi, v_total, 'pending', NOW()
-                );
+        START TRANSACTION;
 
-                UPDATE properti 
-                SET status = 'penuh' 
-                WHERE id_properti = p_id_properti;
-                
-                COMMIT;
-                
-                SELECT 
-                CONCAT('SUCCESS: Booking berhasil. ID Transaksi: ', v_id_trans) AS message,
-                v_id_trans AS id_transaksi,
-                v_total AS total_pembayaran;
-            END;
-        ");
+        -- 1. Cek Ketersediaan
+        SET v_availability = cek_ketersediaan(p_id_properti, p_checkin, p_checkout);
+        
+        IF v_availability != 'tersedia' THEN
+            ROLLBACK;
+            SELECT 'ERROR: Properti tidak tersedia (Penuh/Bentrok)' AS message;
+            LEAVE proc_label;
+        END IF;
+        
+        -- 2. Ambil Harga (Tambahkan COLLATE agar aman)
+        SELECT harga INTO v_harga 
+        FROM properti 
+        WHERE id_properti COLLATE utf8mb4_general_ci = p_id_properti COLLATE utf8mb4_general_ci;
+        
+        -- 3. Hitung Durasi & Total
+        SET v_durasi = hitung_durasi(p_checkin, p_checkout);
+        SET v_total = v_harga * v_durasi;
+        
+        -- 4. Generate ID Transaksi (Memanggil Function yang sudah diperbaiki)
+        SET v_id_trans = generate_kd_trx();
+        
+        -- 5. Insert Data
+        INSERT INTO transaksi (
+            id_trans, id_user, id_properti, id_metode, 
+            tgl_trans, checkin, checkout, durasi, total_harga, status, created_at
+        ) VALUES (
+            v_id_trans, p_id_user, p_id_properti, p_id_metode,
+            NOW(), p_checkin, p_checkout, v_durasi, v_total, 'pending', NOW()
+        );
 
+        -- Update status properti
+        UPDATE properti 
+        SET status = 'penuh' 
+        WHERE id_properti COLLATE utf8mb4_general_ci = p_id_properti COLLATE utf8mb4_general_ci;
+        
+        COMMIT;
+        
+        SELECT 
+        CONCAT('SUCCESS: Booking berhasil. ID Transaksi: ', v_id_trans) AS message,
+        v_id_trans AS id_transaksi,
+        v_total AS total_pembayaran;
+    END;
+");
         // 3. PROCEDURE: KONFIRMASI PEMBAYARAN
         DB::unprepared("
             DROP PROCEDURE IF EXISTS confirm_payment;
@@ -168,7 +173,7 @@ return new class extends Migration
             CREATE PROCEDURE register_customer(
                 IN p_nama VARCHAR(100),
                 IN p_email VARCHAR(100),
-                IN p_password VARCHAR(255),
+                IN p_pass VARCHAR(255),
                 IN p_no_hp VARCHAR(20)
             )
             BEGIN
@@ -192,7 +197,7 @@ return new class extends Migration
                     SET v_new_id = generate_id_customer();
                     
                     INSERT INTO users (id_user, nm_user, email, pass, role, no_hp, created_at)
-                    VALUES (v_new_id, p_nama, p_email, p_password, 'customer', p_no_hp, now());
+                    VALUES (v_new_id, p_nama, p_email, p_pass, 'customer', p_no_hp, now());
                     
                     COMMIT;
                     SELECT CONCAT('SUCCESS: Registrasi berhasil. ID: ', v_new_id) AS message;
@@ -217,11 +222,9 @@ return new class extends Migration
                 
                 DECLARE EXIT HANDLER FOR SQLEXCEPTION
                 BEGIN
-                    ROLLBACK;
+
                     RESIGNAL;
                 END;
-
-                START TRANSACTION;
                 
                 -- Panggil Function generate_kode_properti yang sudah dibuat di migration sebelumnya
                 SET v_id_properti = generate_kode_properti();
@@ -234,8 +237,6 @@ return new class extends Migration
                     v_id_properti, p_admin_id, p_kategori, p_nama,
                     p_desc, p_alamat, p_harga, 'available', NOW(), NOW()
                 );
-                
-                COMMIT;
                 
                 -- RETURN ID BARU DENGAN NAMA KOLOM 'id_properti' (PENTING BUAT CONTROLLER)
                 SELECT v_id_properti AS id_properti, 'SUCCESS' as message;
@@ -273,6 +274,39 @@ return new class extends Migration
                 END IF;
             END;
         ");
+
+        DB::unprepared("
+            DROP PROCEDURE IF EXISTS search_property;
+            
+            CREATE PROCEDURE search_property(
+                IN p_alamat VARCHAR(100),
+                IN p_kategori VARCHAR(5),
+                IN p_range_harga VARCHAR(10) -- 'low', 'medium', 'high', or NULL
+            )
+            BEGIN
+                SET p_alamat = IF(p_alamat = '', NULL, p_alamat);
+                SET p_kategori = IF(p_kategori = '', NULL, p_kategori);
+                SET p_range_harga = IF(p_range_harga = '', NULL, p_range_harga);
+
+                SELECT * FROM view_detail_properti
+                WHERE 
+                    -- 1. Filter Lokasi (Flexible match)
+                    (p_alamat IS NULL OR alamat LIKE CONCAT('%', p_alamat, '%') OR nm_properti LIKE CONCAT('%', p_alamat, '%'))
+                    
+                    AND 
+                    -- 2. Filter Kategori (Exact match)
+                    (p_kategori IS NULL OR nm_kategori = p_kategori OR id_kategori = p_kategori)
+                    
+                    AND 
+                    -- 3. Filter Range Harga (Logic sesuai UI)
+                    (
+                        p_range_harga IS NULL 
+                        OR (p_range_harga = 'low' AND harga < 5000000)
+                        OR (p_range_harga = 'medium' AND harga BETWEEN 5000000 AND 10000000)
+                        OR (p_range_harga = 'high' AND harga > 10000000)
+                    );
+            END;
+        ");
     }
 
     public function down(): void
@@ -283,5 +317,6 @@ return new class extends Migration
         DB::unprepared("DROP PROCEDURE IF EXISTS register_customer");
         DB::unprepared("DROP PROCEDURE IF EXISTS add_property");
         DB::unprepared("DROP PROCEDURE IF EXISTS update_profile");
+        DB::unprepared("DROP PROCEDURE IF EXISTS search_property");
     }
 };

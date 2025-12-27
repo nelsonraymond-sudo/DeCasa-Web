@@ -71,6 +71,36 @@ return new class extends Migration
             GROUP BY period
             ORDER BY period DESC
         ");
+
+        DB::statement("
+            CREATE OR REPLACE VIEW view_detail_properti AS
+            SELECT 
+                p.id_properti,
+                p.nm_properti,
+                p.deskripsi,
+                p.alamat,   
+                p.harga,
+                p.status,
+                k.nm_kategori,
+                u.nm_user as nama_pemilik,
+                (SELECT url_foto FROM foto WHERE foto.id_properti = p.id_properti LIMIT 1) as url_foto,
+                GROUP_CONCAT(f.nm_fasilitas SEPARATOR ', ') as fasilitas
+            FROM properti p
+            JOIN kategori k ON p.id_kategori = k.id_kategori
+            JOIN users u ON p.id_user = u.id_user
+            LEFT JOIN detailfasilitas df ON p.id_properti = df.id_properti
+            LEFT JOIN fasilitas f ON df.id_fasilitas = f.id_fasilitas
+            GROUP BY 
+                p.id_properti, 
+                p.nm_properti, 
+                p.deskripsi, 
+                p.alamat, 
+                p.harga, 
+                p.status, 
+                k.nm_kategori, 
+                u.nm_user,
+                url_foto
+        ");
     }
 
     public function down(): void
@@ -79,5 +109,6 @@ return new class extends Migration
         DB::statement("DROP VIEW IF EXISTS view_booking_history");
         DB::statement("DROP VIEW IF EXISTS view_pending_payments");
         DB::statement("DROP VIEW IF EXISTS view_laporan_decasa");
+        DB::statement("DROP VIEW IF EXISTS view_detail_properti");
     }
 };

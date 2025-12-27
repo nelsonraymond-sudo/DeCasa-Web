@@ -8,22 +8,20 @@ use Illuminate\Support\Facades\Auth;
 
 class DashboardController extends Controller
 {
-    public function index()
-    {
-        
-        $laporan = DB::table('laporan_decasa')->first();
+   public function index()
+{
+    $totalUnit = DB::table('properti')->count();
 
-        $totalProperti    = $laporan->total_properti ?? 0;
-        $propertiTersedia = $laporan->properti_tersedia ?? 0;
-        $propertiTerisi   = $laporan->properti_penuh ?? 0;
-        
-        $totalPendapatan  = $laporan->pendapatan_bulan_ini ?? 0; 
-        
-        return view('admin.dashboard', compact(
-            'totalProperti',
-            'propertiTersedia',
-            'propertiTerisi',
-            'totalPendapatan'
-        ));
-    }
+    $available = DB::table('properti')
+                ->where('status', 'available') 
+                ->count();
+                
+    $occupied = DB::table('properti')
+                ->where('status', 'full')
+                ->count();
+
+    $revenue = DB::table('view_laporan_decasa')->sum('total_revenue');
+
+    return view('admin.dashboard', compact('totalUnit', 'available', 'occupied', 'revenue'));
+}
 }
