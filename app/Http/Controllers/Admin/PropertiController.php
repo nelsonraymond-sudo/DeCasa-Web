@@ -19,7 +19,6 @@ class PropertiController extends Controller
     return view('admin.properti.index', compact('properti'));
 }
     
-
     public function manage()
     {
         $properti = DB::table('properti')
@@ -98,11 +97,11 @@ class PropertiController extends Controller
             }
 
             DB::commit();
-            return redirect()->route('admin.properti.index')->with('success', 'Properti berhasil ditambahkan!');
+            return redirect()->route('admin.properti.index')->with('success', 'Properties successfully added!');
 
         } catch (\Exception $e) {
             DB::rollBack();
-            return back()->with('error', 'Gagal menyimpan: ' . $e->getMessage())->withInput();
+            return back()->with('error', 'Failed to save' . $e->getMessage())->withInput();
         }
     }
 
@@ -114,7 +113,7 @@ class PropertiController extends Controller
             ->first();
 
         if (!$properti) {
-            return redirect()->route('admin.properti.index')->with('error', 'Properti tidak ditemukan.');
+            return redirect()->route('admin.properti.index')->with('error', 'Properties not found.');
         }
 
         $fotos = DB::table('foto')->where('id_properti', $id)->get();
@@ -133,7 +132,7 @@ class PropertiController extends Controller
         $properti = DB::table('properti')->where('id_properti', $id)->first();
 
         if (!$properti) {
-            return redirect()->back()->with('error', 'Data properti tidak ditemukan.');
+            return redirect()->back()->with('error', 'Properties not found.');
         }
 
         $fasilitas = DB::table('fasilitas')->get();
@@ -209,11 +208,11 @@ class PropertiController extends Controller
             }
 
             DB::commit();
-            return redirect()->route('admin.properti.manage')->with('success', 'Data properti berhasil diperbarui!');
+            return redirect()->route('admin.properti.manage')->with('success', 'Properties succesfully updated!');
 
         } catch (\Exception $e) {
             DB::rollBack();
-            return back()->with('error', 'Gagal update: ' . $e->getMessage())->withInput();
+            return back()->with('error', 'Failed to update: ' . $e->getMessage())->withInput();
         }
     }
 
@@ -234,11 +233,11 @@ class PropertiController extends Controller
             DB::table('properti')->where('id_properti', $id)->delete(); 
             
             DB::commit();
-            return back()->with('success', 'Properti Berhasil Dihapus');
+            return back()->with('success', 'Properties successfully deleted!');
 
         } catch (\Exception $e) {
             DB::rollBack();
-            return back()->with('error', 'Gagal menghapus: ' . $e->getMessage());
+            return back()->with('error', 'Failed to delete: ' . $e->getMessage());
         }
     }
 }

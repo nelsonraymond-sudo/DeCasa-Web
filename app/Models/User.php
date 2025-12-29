@@ -29,14 +29,10 @@ class User extends Authenticatable
      * The attributes that should be hidden for serialization.  
      */
     protected $hidden = [
-        'pass', // Sembunyikan pass saat return JSON
+        'pass', 
         'remember_token',
     ];
-
-    /**
-     * Get the password for the user.
-     * Laravel defaultnya cari kolom 'password', kita override ke 'pass'
-     */
+    
     public function getAuthPassword()
     {
         return $this->pass;

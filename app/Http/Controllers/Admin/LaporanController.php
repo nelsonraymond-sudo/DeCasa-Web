@@ -20,7 +20,7 @@ class LaporanController extends Controller
         } catch (\Exception $e) {
             $laporan = collect([]); 
             $totalPemasukan = 0;
-            session()->flash('error', 'Gagal mengambil data laporan: ' . $e->getMessage());
+            session()->flash('error', 'Failed to retrieve report data: ' . $e->getMessage());
         }
 
         return view('admin.laporan.index', compact('laporan', 'totalPemasukan'));

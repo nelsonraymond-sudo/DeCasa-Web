@@ -34,7 +34,7 @@ class FasilitasController extends Controller
             'nm_fasilitas' => $request->nm_fasilitas,
         ]);
 
-        return back()->with('success', 'Fasilitas berhasil ditambahkan!');
+        return back()->with('success', 'Facility successfully added!');
     }
 
     public function update(Request $request, $id)
@@ -47,7 +47,7 @@ class FasilitasController extends Controller
             ->where('id_fasilitas', $id)
             ->update(['nm_fasilitas' => $request->nm_fasilitas]);
 
-        return back()->with('success', 'Fasilitas berhasil diperbarui!');
+        return back()->with('success', 'Facility successfully updated!');
     }
 
     public function destroy($id)
@@ -56,6 +56,6 @@ class FasilitasController extends Controller
         
         DB::table('fasilitas')->where('id_fasilitas', $id)->delete();
 
-        return back()->with('success', 'Fasilitas berhasil dihapus!');
+        return back()->with('success', 'Facility successfully deleted!');
     }
 }

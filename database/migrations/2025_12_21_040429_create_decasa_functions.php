@@ -57,12 +57,10 @@ return new class extends Migration
             DECLARE v_status_properti VARCHAR(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
             DECLARE count_bentrok INT;
 
-            -- Ambil status properti
             SELECT status INTO v_status_properti
             FROM properti
             WHERE id_properti = p_id_properti; -- Aman karena p_id_properti sudah diset general_ci
 
-            -- Cek bentrok tanggal
             SELECT COUNT(*) INTO count_bentrok
             FROM transaksi
             WHERE id_properti = p_id_properti -- Aman
@@ -134,41 +132,36 @@ return new class extends Migration
 
         // 6. FUNCTION: GENERATE KODE TRANSAKSI
         DB::unprepared("
-    DROP FUNCTION IF EXISTS generate_kd_trx;
-    CREATE FUNCTION generate_kd_trx()
-    RETURNS VARCHAR(20)
-    DETERMINISTIC
-    BEGIN
-        DECLARE v_tanggal VARCHAR(8);
-        DECLARE urutan INT;
-        DECLARE kode VARCHAR(13);
-        DECLARE max_id VARCHAR(13);
+            DROP FUNCTION IF EXISTS generate_kd_trx;
+            CREATE FUNCTION generate_kd_trx()
+            RETURNS VARCHAR(20)
+            DETERMINISTIC
+            BEGIN
+                DECLARE v_tanggal VARCHAR(8);
+                DECLARE urutan INT;
+                DECLARE kode VARCHAR(13);
+                DECLARE max_id VARCHAR(13);
 
-        -- 1. Ambil tanggal hari ini (Format: 251227)
-        SET v_tanggal = DATE_FORMAT(CURDATE(), '%y%m%d');
+                SET v_tanggal = DATE_FORMAT(CURDATE(), '%y%m%d');
 
-        -- 2. Cari ID paling besar hari ini (Logic MAX, bukan COUNT)
-        -- Kita pakai COLLATE agar tidak error 'Illegal mix of collations'
-        SELECT MAX(id_trans) INTO max_id
-        FROM transaksi
-        WHERE id_trans COLLATE utf8mb4_general_ci LIKE CONCAT('TRX', v_tanggal, '-%') COLLATE utf8mb4_general_ci;
+                SELECT MAX(id_trans) INTO max_id
+                FROM transaksi
+                WHERE id_trans COLLATE utf8mb4_general_ci LIKE CONCAT('TRX', v_tanggal, '-%') COLLATE utf8mb4_general_ci;
 
-        -- 3. Cek Logic Urutan
-        IF max_id IS NULL THEN
-            -- Jika belum ada transaksi hari ini, mulai dari 1
-            SET urutan = 1;
-        ELSE
-            -- Jika sudah ada, ambil angka di belakang (mulai karakter ke-11)
-            -- Contoh: TRX251227-005 -> ambil '005' -> jadi 5 -> tambah 1 = 6
-            SET urutan = CAST(SUBSTRING(max_id, 11) AS UNSIGNED) + 1;
-        END IF;
+                IF max_id IS NULL THEN
+                    -- Jika belum ada transaksi hari ini, mulai dari 1
+                    SET urutan = 1;
+                ELSE
+                    -- Jika sudah ada, ambil angka di belakang (mulai karakter ke-11)
+                    -- Contoh: TRX251227-005 -> ambil '005' -> jadi 5 -> tambah 1 = 6
+                    SET urutan = CAST(SUBSTRING(max_id, 11) AS UNSIGNED) + 1;
+                END IF;
 
-        -- 4. Gabungkan (Padding 0 di depan angka)
-        SET kode = CONCAT('TRX', v_tanggal, '-', LPAD(urutan, 3, '0'));
+                SET kode = CONCAT('TRX', v_tanggal, '-', LPAD(urutan, 3, '0'));
 
-        RETURN kode;
-    END
-");
+                RETURN kode;
+            END
+        ");
         // 7. FUNCTION: GENERATE ID ADMIN
         DB::unprepared("
             DROP FUNCTION IF EXISTS generate_id_admin;

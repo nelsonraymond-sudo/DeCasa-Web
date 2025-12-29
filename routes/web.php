@@ -1,7 +1,6 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-// Admin Controllers
 use App\Http\Controllers\Admin\DashboardController; 
 use App\Http\Controllers\Admin\PropertiController;
 use App\Http\Controllers\Admin\LaporanController;
@@ -9,7 +8,6 @@ use App\Http\Controllers\Admin\FasilitasController;
 use App\Http\Controllers\Admin\TransaksiController;
 use App\Http\Controllers\Admin\CustomerController; 
 use App\Http\Controllers\Admin\SettingController;
-// Auth & Customer Controllers
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\Customer\LandingController;
 use App\Http\Controllers\Customer\TransactionController;
@@ -19,36 +17,36 @@ use App\Http\Controllers\Customer\DashboardController as CustomerDashboard;
 Route::get('/', [LandingController::class, 'index'])->name('home');
 Route::get('/search', [LandingController::class, 'search'])->name('properti.search');
 
-// PERHATIKAN INI: Route parameter kita namakan {id_properti} biar jelas
 Route::get('/properti/{id_properti}', [LandingController::class, 'show'])->name('properti.detail');
 
 
-// --- AUTHENTICATION (Login/Register) ---
+// --- AUTHENTICATION ---
 Route::middleware(['guest'])->group(function () {
     Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
     Route::post('/login', [AuthController::class, 'processLogin'])->name('login.process');
     Route::get('/register', [AuthController::class, 'showRegister'])->name('register');
     Route::post('/register', [AuthController::class, 'processRegister'])->name('register.process');
 });
+
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
+// --- 2. HALAMAN CUSTOMER (PROTECTED) ---
 Route::middleware(['auth'])->group(function () {
-    
-    // Dashboard History
-   Route::get('/dashboard', [CustomerDashboard::class, 'index'])->name('customer.dashboard');
 
-   Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+    // Dashboard Customer
+    Route::get('/dashboard', [CustomerDashboard::class, 'index'])->name('customer.dashboard');
+
+    // Profile Customer
+    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::put('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::post('/logout', [ProfileController::class, 'logout'])->name('logout');
 
+    // Transaksi
     Route::get('/booking/{id}', [TransactionController::class, 'showBookingForm'])
          ->name('booking.form');
 
-    // Proses Booking
     Route::post('/booking/process', [TransactionController::class, 'store'])->name('booking.process');
 
-    // Cancel Booking (Method PUT)
-    // Parameter {id} akan ditangkap oleh $id di controller
    Route::put('/transaksi/{id}/cancel', [TransactionController::class, 'cancel'])
          ->name('customer.transaksi.cancel');
 });

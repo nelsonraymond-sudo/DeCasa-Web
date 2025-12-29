@@ -11,10 +11,9 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
 
     <style>
-        /* === 1. DEFINISI WARNA (ROOT) === */
         :root {
-            --clr-primary: #697565;       /* Sage Green (Utama) */
-            --clr-secondary: #DAA520;     /* Gold (Aksen) */
+            --clr-primary: #697565;       
+            --clr-secondary: #DAA520;     
             --clr-bg-light: #f4f7f6;      
             --clr-text-dark: #B6B09F;     
             --clr-text-body: #5f6c7b;    
@@ -28,9 +27,6 @@
             scroll-behavior: smooth; 
         }
 
-        /* === 2. HAPUS SEMUA WARNA BIRU BOOTSTRAP === */
-        
-        /* Ubah warna teks link default */
         a { 
             color: var(--clr-primary); 
             text-decoration: none; 
@@ -38,24 +34,20 @@
         }
         a:hover { color: var(--clr-secondary); }
 
-        /* Timpa class .text-primary (agar judul tidak biru) */
         .text-primary { color: var(--clr-primary) !important; }
         
-        /* Timpa class .bg-primary */
         .bg-primary { background-color: var(--clr-primary) !important; }
 
-        /* Timpa tombol .btn-primary */
         .btn-primary {
             background-color: var(--clr-primary) !important;
             border-color: var(--clr-primary) !important;
             color: #fff;
         }
         .btn-primary:hover, .btn-primary:active, .btn-primary:focus {
-            background-color: #556052 !important; /* Versi lebih gelap */
+            background-color: #556052 !important;
             border-color: #556052 !important;
         }
 
-        /* Timpa tombol .btn-outline-primary */
         .btn-outline-primary {
             color: var(--clr-primary) !important;
             border-color: var(--clr-primary) !important;
@@ -65,19 +57,16 @@
             color: #fff !important;
         }
 
-        /* Hapus efek GLOW BIRU saat klik Input / Tombol */
         .form-control:focus, .form-select:focus, .btn:focus {
             border-color: var(--clr-secondary) !important;
-            box-shadow: 0 0 0 0.25rem rgba(218, 165, 32, 0.25) !important; /* Glow jadi Gold pudar */
+            box-shadow: 0 0 0 0.25rem rgba(218, 165, 32, 0.25) !important;
         }
 
-        /* Warna saat teks diblok/highlight mouse */
         ::selection {
             background-color: var(--clr-primary);
             color: #fff;
         }
 
-        /* === 3. CUSTOM NAVBAR === */
         .navbar {
             background: rgba(255, 255, 255, 0.98);
             backdrop-filter: blur(10px);
@@ -93,25 +82,22 @@
             padding: 8px 16px !important;
         }
 
-        /* Hover Menu: Background Gold */
         .nav-link:hover, .nav-link.active {
             color: #fff !important; 
             background-color: var(--clr-secondary);
             border-radius: 50px;
         }
 
-        /* Logo Decasa */
         .navbar-brand {
             color: var(--clr-primary) !important;
         }
 
-        /* Hamburger Menu (Mobile) */
         .navbar-toggler {
             border: none; 
             color: var(--clr-primary);
         }
         .navbar-toggler:focus {
-            box-shadow: none; /* Hapus kotak biru di mobile menu */
+            box-shadow: none; 
         }
         
         h1, h2, h3, h4, h5, h6 {
@@ -119,7 +105,6 @@
             font-weight: 700;
         }
 
-        /* === 4. CUSTOM BUTTON CLASS (OPSIONAL JIKA BUTUH EXTRA) === */
         .btn-decasa-gold {
             background-color: var(--clr-secondary);
             color: #fff;

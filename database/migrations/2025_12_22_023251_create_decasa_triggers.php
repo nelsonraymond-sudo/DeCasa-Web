@@ -7,17 +7,15 @@ return new class extends Migration
 {
     public function up(): void
     {
-        // 1. TRIGGER: GENERATE ID CUSTOMER & ADMIN OTOMATIS
+        // 1. TRIGGER: GENERATE ID CUSTOMER & ADMIN 
         DB::unprepared("
             DROP TRIGGER IF EXISTS tg_generate_id_cust;
             CREATE TRIGGER tg_generate_id_cust BEFORE INSERT ON users
             FOR EACH ROW BEGIN
-                -- Hanya generate untuk customer jika ID belum diisi
                 IF NEW.role = 'customer' AND (NEW.id_user IS NULL OR NEW.id_user = '') THEN
                     SET NEW.id_user = generate_id_customer();
                 END IF;
                 
-                -- Untuk admin, jika ID belum diisi
                 IF NEW.role = 'admin' AND (NEW.id_user IS NULL OR NEW.id_user = '') THEN
                     SET NEW.id_user = CONCAT('A', LPAD(
                         (SELECT IFNULL(MAX(CAST(SUBSTRING(id_user, 2) AS UNSIGNED)), 0) + 1 
@@ -26,7 +24,7 @@ return new class extends Migration
             END;
         ");
 
-        // 2. TRIGGER: HITUNG DURASI & TOTAL HARGA OTOMATIS
+        // 2. TRIGGER: HITUNG DURASI & TOTAL HARGA 
         DB::unprepared("
             DROP TRIGGER IF EXISTS tg_durasi_total_harga;
             CREATE TRIGGER tg_durasi_total_harga BEFORE INSERT ON transaksi
@@ -34,28 +32,23 @@ return new class extends Migration
                 DECLARE v_harga_properti DECIMAL(12,2);
                 DECLARE v_durasi INT;
                 
-                -- Generate ID Transaksi jika kosong
                 IF NEW.id_trans IS NULL OR NEW.id_trans = '' THEN
                     SET NEW.id_trans = generate_kd_trx();
                 END IF;
                 
-                -- Set Tanggal Transaksi default NOW()
                 IF NEW.tgl_trans IS NULL THEN
                     SET NEW.tgl_trans = NOW();
                 END IF;
             
-                -- Ambil harga properti
                 SELECT harga INTO v_harga_properti
                 FROM properti
                 WHERE id_properti = NEW.id_properti;
                 
-                -- Hitung durasi
                 SET v_durasi = DATEDIFF(NEW.checkout, NEW.checkin);
                 IF v_durasi < 1 THEN
                     SET v_durasi = 1;
                 END IF;
                 
-                -- Set nilai ke row baru
                 SET NEW.durasi = v_durasi;
                 SET NEW.total_harga = v_harga_properti * v_durasi;
             END;
@@ -68,7 +61,6 @@ return new class extends Migration
             FOR EACH ROW BEGIN
                 DECLARE v_harga_properti DECIMAL(12,2);
                 
-                -- Hanya jalankan jika tanggal berubah
                 IF OLD.checkin != NEW.checkin OR OLD.checkout != NEW.checkout THEN
                     
                     SELECT harga INTO v_harga_properti
@@ -93,19 +85,16 @@ return new class extends Migration
             FOR EACH ROW BEGIN
                 DECLARE tabrakan INT;
                 
-                -- Validasi 1: Checkout harus setelah checkin
                 IF NEW.checkout <= NEW.checkin THEN
                     SIGNAL SQLSTATE '45000'
                     SET MESSAGE_TEXT = 'Tanggal checkout harus setelah tanggal checkin';
                 END IF;
                 
-                -- Validasi 2: Checkin tidak boleh masa lalu (Hati-hati Timezone DB!)
                 IF NEW.checkin < CURDATE() THEN
                     SIGNAL SQLSTATE '45000'
                     SET MESSAGE_TEXT = 'Tanggal checkin tidak boleh di masa lalu';
                 END IF;
                 
-                -- Validasi 3: Cek tabrakan jadwal (LOGIC FIX)
                 SELECT COUNT(*) INTO tabrakan
                 FROM transaksi
                 WHERE id_properti = NEW.id_properti
@@ -141,25 +130,20 @@ return new class extends Migration
             FOR EACH ROW BEGIN
                 DECLARE ada_transaksi_aktif INT;
                 
-                -- KASUS 1: Transaksi selesai atau dibatalkan
                 IF (OLD.status IN ('pending', 'lunas') AND NEW.status IN ('batal', 'selesai')) THEN
                    
-                   -- Cek apakah masih ada transaksi AKTIF LAIN untuk properti ini di masa depan/sekarang?
-                   -- (Kita tidak mau set 'tersedia' jika ternyata masih ada booking lain yang nunggu)
                    SELECT COUNT(*) INTO ada_transaksi_aktif
                    FROM transaksi
                    WHERE id_properti = NEW.id_properti
                      AND status IN ('pending', 'lunas')
                      AND id_trans != NEW.id_trans;
                    
-                   -- Jika benar-benar kosong, baru set tersedia
                    IF ada_transaksi_aktif = 0 THEN
                        UPDATE properti 
                        SET status = 'tersedia', updated_at = NOW()
                        WHERE id_properti = NEW.id_properti;
                    END IF;
                    
-                -- KASUS 2: Transaksi batal diaktifkan kembali (Re-open)
                 ELSEIF OLD.status = 'batal' AND NEW.status IN ('pending', 'lunas') THEN
                     UPDATE properti 
                     SET status = 'penuh', updated_at = NOW()

@@ -72,6 +72,7 @@ return new class extends Migration
             ORDER BY period DESC
         ");
 
+        // 5. VIEW: DETAIL PROPERTI
         DB::statement("
             CREATE OR REPLACE VIEW view_detail_properti AS
             SELECT 

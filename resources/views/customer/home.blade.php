@@ -2,7 +2,7 @@
 
 @section('content')
 
-{{-- === 1. SECTION HOME (HERO) === --}}
+{{-- === 1. SECTION HOME === --}}
 <section id="home" class="d-flex align-items-center justify-content-center text-center" 
     style="height: 100vh; background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url('https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1920&q=80'); background-size: cover; background-position: center;">
     
@@ -14,7 +14,7 @@
             <form action="{{ route('properti.search') }}" method="GET">
                 <div class="row g-2">
                     <div class="col-md-5">
-                        <input type="text" name="lokasi" class="form-control form-control-lg border-0 bg-light" placeholder="Seacrh by location...">
+                        <input type="text" name="lokasi" class="form-control form-control-lg border-0 bg-light" placeholder="Search by location...">
                     </div>
                     <div class="col-md-4">
                         <select name="kategori" class="form-select form-select-lg border-0 bg-light">
@@ -48,15 +48,12 @@
                     {{-- Gambar --}}
                     <div style="height: 220px; position: relative;">
                             @php
-                                // Cek apakah url_foto kosong?
                                 if(empty($p->url_foto)) {
                                     $imgUrl = 'https://via.placeholder.com/400x300?text=No+Image';
                                 } 
-                                // Cek apakah ini link eksternal (dari Seeder/Unsplash)?
                                 elseif(Str::startsWith($p->url_foto, 'http')) {
                                     $imgUrl = $p->url_foto;
                                 } 
-                                // Jika bukan, berarti file lokal di storage
                                 else {
                                     $imgUrl = asset('storage/'.$p->url_foto);
                                 }
@@ -106,7 +103,6 @@
 <section id="services" class="py-5" style="background-color: var(--clr-bg-light);">
     <div class="container py-5">
 
-        {{-- Teks Atas --}}
         <div class="text-center mb-5">
             <h6 class="text-primary fw-bold text-uppercase">Our Services</h6>
             <h2 class="fw-bold mb-4">Why Choose Decasa?</h2>
@@ -135,7 +131,6 @@
 </section>
 
 
-{{-- === 4. SECTION OUR CUSTOMER (TESTIMONI) === --}}
 <section id="customer" class="py-5 bg-white">
     <div class="container py-5 text-center">
         <h6 class="text-primary fw-bold text-uppercase">Testimonial</h6>

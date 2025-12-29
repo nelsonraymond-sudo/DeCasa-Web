@@ -11,10 +11,8 @@
     </nav>
 
     <div class="row">
-        {{-- KOLOM KIRI --}}
         <div class="col-lg-8">
             
-            {{-- LOGIC GAMBAR UTAMA --}}
             <div class="card border-0 shadow-sm mb-4 overflow-hidden">
                 @php
                     // Cek apakah array $fotos ada isinya
@@ -30,7 +28,6 @@
                 <img src="{{ $fotoUtama }}" class="w-100 object-fit-cover" style="height: 400px;" alt="Main Image">
             </div>
 
-            {{-- GALLERY KECIL (Looping sisa foto) --}}
             @if(count($fotos) > 1)
             <div class="row mb-4">
                 @foreach($fotos as $f)
@@ -66,7 +63,7 @@
                 @endforelse
             </div>
         </div>
-        
+
         <div class="col-lg-4">
             <div class="card shadow p-4 border-0 sticky-top" style="top: 100px;">
                 <h5 class="text-muted">Rental Price</h5>

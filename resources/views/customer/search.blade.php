@@ -4,12 +4,10 @@
 
 @section('content')
 
-{{-- HEADER PENCARIAN --}}
 <section class="bg-light py-5 mt-5">
     <div class="container">
         <h2 class="fw-bold mb-4">Property Search Results</h2>
         
-        {{-- Form Pencarian Ulang --}}
         <div class="card border-0 shadow-sm p-3 rounded-4">
             <form action="{{ route('properti.search') }}" method="GET">
                 <div class="row g-2">
@@ -35,7 +33,6 @@
     </div>
 </section>
 
-{{-- LISTING HASIL --}}
 <section class="py-5">
     <div class="container">
         @if(isset($properti) && $properti->count() > 0)
@@ -44,18 +41,14 @@
                 <div class="col-md-4 col-lg-4">
                     <div class="card h-100 border-0 shadow-sm rounded-4 overflow-hidden">
                         
-                        {{-- LOGIKA GAMBAR (Thumbnail) --}}
                         <div style="height: 220px; position: relative;">
                             @php
-                                // Cek apakah url_foto kosong?
                                 if(empty($p->url_foto)) {
                                     $imgUrl = 'https://via.placeholder.com/400x300?text=No+Image';
                                 } 
-                                // Cek apakah ini link eksternal (dari Seeder/Unsplash)?
                                 elseif(Str::startsWith($p->url_foto, 'http')) {
                                     $imgUrl = $p->url_foto;
                                 } 
-                                // Jika bukan, berarti file lokal di storage
                                 else {
                                     $imgUrl = asset('storage/'.$p->url_foto);
                                 }
@@ -82,7 +75,6 @@
                             <hr class="text-muted opacity-25">
                             
                             <div class="d-grid">
-                                {{-- Link ke Detail --}}
                                 <a href="{{ route('properti.detail', $p->id_properti) }}" class="btn btn-outline-primary rounded-pill">
                                     Detail
                                 </a>
@@ -93,13 +85,11 @@
                 @endforeach
             </div>
 
-            {{-- Pagination Links --}}
             <div class="d-flex justify-content-center mt-5">
                 {{ $properti->withQueryString()->links('pagination::bootstrap-5') }}
             </div>
 
         @else
-            {{-- TAMPILAN JIKA TIDAK ADA HASIL --}}
             <div class="text-center py-5">
                 <div class="mb-3">
                     <i class="bi bi-search display-1 text-muted opacity-25"></i>

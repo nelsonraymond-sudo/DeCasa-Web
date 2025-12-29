@@ -44,7 +44,7 @@ class SettingController extends Controller
                 $request->no_hp
             ]);
 
-            $message = $result[0]->message ?? 'Terjadi kesalahan';
+            $message = $result[0]->message ?? 'An error has occurred.';
 
             if (str_contains($message, 'ERROR')) {
                 return back()->with('error', $message);

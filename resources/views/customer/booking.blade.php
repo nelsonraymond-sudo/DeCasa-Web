@@ -6,7 +6,6 @@
         <div class="col-lg-10">
             <h2 class="fw-bold mb-4">Order Confirmation</h2>
 
-            {{-- TAMPILKAN ALERT ERROR / SUCCESS --}}
             @if(session('error'))
                 <div class="alert alert-danger alert-dismissible fade show" role="alert">
                     <i class="bi bi-exclamation-triangle-fill me-2"></i> {{ session('error') }}
@@ -15,7 +14,6 @@
             @endif
 
             <div class="row">
-                {{-- KIRI: FORM INPUT --}}
                 <div class="col-md-7">
                     <div class="card border-0 shadow-sm p-4">
                        <form action="{{ route('booking.process') }}" method="POST">
@@ -24,19 +22,19 @@
     <input type="hidden" name="id_properti" value="{{ $properti->id_properti }}">
 
     <div class="mb-3">
-        <label>Tanggal Check-in</label>
+        <label>Check-in Date</label>
         <input type="date" name="checkin" class="form-control" required>
     </div>
 
     <div class="mb-3">
-        <label>Tanggal Check-out</label>
+        <label>Check-out Date</label>
         <input type="date" name="checkout" class="form-control" required>
     </div>
 
     <div class="mb-3">
-        <label>Metode Pembayaran</label>
+        <label>Payment Method</label>
         <select name="metode_bayar" class="form-select" required>
-            <option value="">-- Pilih Pembayaran --</option>
+            <option value="">-- Choose Payment --</option>
             @foreach($payment as $p)
         <option value="{{ $p->id_metode }}">{{ $p->nama_bank }}</option>
     @endforeach
@@ -48,7 +46,6 @@
                     </div>
                 </div>
 
-                {{-- KANAN: RINGKASAN PROPERTI (Dari View) --}}
                 <div class="col-md-5">
                     <div class="card border-0 shadow-sm bg-light">
                         <img src="{{ $properti->url_foto ?? asset('img/no-image.jpg') }}" class="card-img-top" alt="Properti" style="height: 200px; object-fit: cover;">
@@ -58,7 +55,7 @@
                             
                             <hr>
                             <div class="d-flex justify-content-between">
-                                <span>Price per Month</span>
+                                <span>Price per Day</span>
                                 <span class="fw-bold text-primary">Rp {{ number_format($properti->harga, 0, ',', '.') }}</span>
                             </div>
                             <div class="d-flex justify-content-between mt-2">
