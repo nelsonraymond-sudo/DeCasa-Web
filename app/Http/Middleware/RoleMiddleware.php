@@ -16,7 +16,7 @@ class RoleMiddleware
         }
 
         if (Auth::user()->role !== $role) {
-            abort(403, 'Anda tidak memiliki akses ke halaman ini.');
+            abort(403, 'You do not have access to this page.');
         }
 
         return $next($request);

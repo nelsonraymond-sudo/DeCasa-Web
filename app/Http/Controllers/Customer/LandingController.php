@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Customer;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Http\Request;
 
 class LandingController extends Controller
@@ -30,13 +31,24 @@ class LandingController extends Controller
            
         ];
 
+        $cuaca = null;
+    try {
+        $apiKey = 'b9ef90e3f027f446d5f67152cde5e37d'; 
+        $lat = '-7.7956'; // Jogja
+        $lon = '110.3695';
+        $response = Http::get("https://api.openweathermap.org/data/2.5/weather?lat={$lat}&lon={$lon}&appid={$apiKey}&units=metric&lang=id");
+        $cuaca = $response->json();
+    } catch (\Exception $e) {
+        $cuaca = null;
+    }
+
         $reviews = [
             ['nama' => 'Yoana Fallen', 'role' => 'Customer', 'isi' => 'Pelayanannya cepatnyoo, rumah pun sesuai foto!'],
             ['nama' => 'Surya Seafood', 'role' => 'Customer', 'isi' => 'Top Markotop banget harga standar, sukses terus.'],
             ['nama' => 'Allaudya Annida', 'role' => 'Customer', 'isi' => 'Cari kos dekat amikom jadi gampang banget.'],
         ];
 
-        return view('customer.home', compact('kategori', 'properti', 'services', 'reviews'));
+        return view('customer.home', compact('kategori', 'properti', 'services', 'reviews', 'cuaca'));
     }
 
     public function search(Request $request)
@@ -63,7 +75,7 @@ class LandingController extends Controller
         $query->where('properti.id_kategori', $id_kategori);
     }
 
-    $properti = $query->paginate(9);
+    $properti = $query->paginate(10);
 
     $kategori = DB::table('kategori')->get();
 

@@ -55,7 +55,7 @@
 
                         <div class="mt-auto border-top pt-3 d-flex justify-content-between align-items-center">
                             <div>
-                                <span class="text-muted small">Price per month</span>
+                                <span class="text-muted small">Price per day</span>
                                 <div class="fw-bold text-success fs-4">Rp {{ number_format($p->harga, 0, ',', '.') }}</div>
                             </div>
                             
@@ -73,8 +73,8 @@
         <div class="mb-3">
             <i class="bi bi-house-x text-muted" style="font-size: 3rem;"></i>
         </div>
-        <h5 class="text-muted">Tidak ada properti yang tersedia saat ini.</h5>
-        <p class="text-muted small">Silakan tambahkan properti baru.</p>
+        <h5 class="text-muted">There are currently no properties available.</h5>
+        <p class="text-muted small">Please add a new property.</p>
     </div>
     @endforelse
 </div>

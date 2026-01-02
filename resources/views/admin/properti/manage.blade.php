@@ -15,8 +15,16 @@
     <div class="col-md-4 mb-4">
         <div class="card border-0 shadow-sm h-100 bg-white rounded-0">
             <div style="height: 220px; overflow: hidden; background: #eee;">
-                @if(isset($p->url_foto) && $p->url_foto)
-                    <img src="{{ asset('storage/' . $p->url_foto) }}" class="w-100 h-100" style="object-fit: cover;">
+                @php
+                    $thumbnail = DB::table('foto')->where('id_properti', $p->id_properti)->first();
+                @endphp
+
+                @if($thumbnail)
+                    @if(Str::startsWith($thumbnail->url_foto, 'http'))
+                        <img src="{{ $thumbnail->url_foto }}" class="w-100 h-100" style="object-fit: cover;">
+                    @else
+                        <img src="{{ asset('storage/' . $thumbnail->url_foto) }}" class="w-100 h-100" style="object-fit: cover;">
+                    @endif
                 @else
                     <img src="https://placehold.co/600x400?text=No+Image" class="w-100 h-100" style="object-fit: cover;">
                 @endif

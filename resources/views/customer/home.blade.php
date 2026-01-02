@@ -7,6 +7,15 @@
     style="height: 100vh; background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url('https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1920&q=80'); background-size: cover; background-position: center;">
     
     <div class="container text-white mt-5">
+        @if(isset($cuaca) && $cuaca)
+        <div class="d-inline-flex align-items-center bg-white text-dark rounded-pill px-4 py-2 mb-4 shadow animate__animated animate__fadeInDown" style="opacity: 0.9;">
+            <img src="http://openweathermap.org/img/wn/{{ $cuaca['weather'][0]['icon'] }}.png" alt="Cuaca" width="40">
+            <div class="text-start ms-2 lh-1">
+                <span class="d-block fw-bold" style="font-size: 0.9rem;">Yogyakarta, {{ round($cuaca['main']['temp']) }}°C</span>
+                <small class="text-muted" style="font-size: 0.75rem;">{{ ucfirst($cuaca['weather'][0]['description']) }}</small>
+            </div>
+        </div>
+        @endif
         <h1 class="display-3 fw-bold mb-3">Find your ideal home</h1>
         <p class="lead mb-5">The best properties are ready to move into with an easy and secure process.</p>
         

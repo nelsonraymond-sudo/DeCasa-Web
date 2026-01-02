@@ -20,7 +20,10 @@ class AuthController extends Controller
             'password' => 'required',
         ]);
 
-        $credentials = $request->only('email', 'password');
+        $credentials = [
+            'email' => $request->email,
+            'password' => $request->password
+        ];
 
         if (Auth::attempt($credentials)) {
             $request->session()->regenerate();
@@ -32,11 +35,11 @@ class AuthController extends Controller
                 return redirect()->intended(route('home')); 
             } else {
                 Auth::logout();
-                return back()->withErrors(['email' => 'Role tidak valid.']);
+                return back()->withErrors(['email' => 'Invalid role.']);
             }
         }
 
-        return back()->withErrors(['email' => 'Email atau password salah.']);
+        return back()->withErrors(['email' => 'Incorrect email or password.']);
     }
 
     public function processRegister(Request $request)
@@ -62,12 +65,12 @@ class AuthController extends Controller
                 'id_user' => $newId,         
                 'nm_user' => $request->nm_user,
                 'email'   => $request->email,
-                'pass'    => Hash::make($request->pass), 
+                'pass'    => Hash::make($request->password),
                 'role'    => 'customer',          
                 'no_hp'   => $request->no_hp,
             ]);
             
-            return redirect()->route('login')->with('success', "Anda terdaftar dengan ID: $newId. Silakan Login.");
+            return redirect()->route('login')->with('success', "You are registered with ID: $newId. Please login.");
 
         } catch (\Exception $e) {
             return back()->withErrors(['msg' => 'Gagal Register: ' . $e->getMessage()])->withInput();

@@ -182,14 +182,14 @@
         <div class="container-fluid px-0 mb-3">
             @if(session('success'))
                 <div class="alert alert-success alert-dismissible fade show rounded-0 shadow-sm" role="alert">
-                    <i class="bi bi-check-circle me-2"></i><strong>Berhasil!</strong> {{ session('success') }}
+                    <i class="bi bi-check-circle me-2"></i><strong>Success!</strong> {{ session('success') }}
                     <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
                 </div>
             @endif
 
             @if(session('error'))
                 <div class="alert alert-danger alert-dismissible fade show rounded-0 shadow-sm" role="alert">
-                    <i class="bi bi-exclamation-circle me-2"></i><strong>Terjadi Kesalahan!</strong> {{ session('error') }}
+                    <i class="bi bi-exclamation-circle me-2"></i><strong>An error has occurred!</strong> {{ session('error') }}
                     <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
                 </div>
             @endif

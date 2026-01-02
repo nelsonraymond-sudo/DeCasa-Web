@@ -19,13 +19,6 @@ return new class extends Migration
                 DECLARE v_status VARCHAR(20);
                 DECLARE v_checkin DATE;
                 
-                /* DECLARE EXIT HANDLER FOR SQLEXCEPTION
-                BEGIN
-                    ROLLBACK;
-                    SELECT 'ERROR: A system error has occurred' AS message;
-                END; 
-                */
-                
                 START TRANSACTION;
                 
                 SELECT status, checkin INTO v_status, v_checkin

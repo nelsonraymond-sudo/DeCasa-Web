@@ -72,9 +72,12 @@ class PropertiController extends Controller
 
             $idBaru = $result->id_properti;
 
-            if ($request->has('status')) {
-                DB::table('properti')->where('id_properti', $idBaru)->update(['status' => $request->status]);
-            }
+            DB::table('properti')
+            ->where('id_properti', $idBaru)
+            ->update([
+                'status' => $request->status,
+                'updated_at' => now() 
+            ]);
 
             if ($request->hasFile('fotos')) {
                 foreach ($request->file('fotos') as $file) {

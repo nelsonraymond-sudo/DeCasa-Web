@@ -15,6 +15,6 @@ class IsAdmin
             return $next($request);
         }
 
-        abort(403, 'Anda tidak memiliki akses ke halaman Admin.');
+        abort(403, 'You do not have access to the Admin Dashboard.');
     }
 }

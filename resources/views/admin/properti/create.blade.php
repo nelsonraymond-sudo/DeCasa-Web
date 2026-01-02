@@ -41,7 +41,7 @@
 
                 <div class="row">
                     <div class="col-md-6 mb-3">
-                        <label class="form-label text-muted small fw-bold">PRICE (PER MONTH)</label>
+                        <label class="form-label text-muted small fw-bold">PRICE (PER DAY)</label>
                         <input type="number" name="harga" class="form-control py-2" placeholder="Ex: 2500000" value="{{ old('harga') }}" required>
                     </div>
                     <div class="col-md-6 mb-3">

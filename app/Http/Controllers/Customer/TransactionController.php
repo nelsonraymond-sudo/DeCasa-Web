@@ -27,7 +27,7 @@ class TransactionController extends Controller
         $payment = DB::table('payment')->get(); 
 
         if (!$properti) {
-            return redirect()->back()->with('error', 'Properti tidak ditemukan');
+            return redirect()->back()->with('error', 'Properties Not Found');
         }
 
         return view('customer.booking', compact('properti', 'payment'));
@@ -61,7 +61,7 @@ class TransactionController extends Controller
                  return back()->with('error', 'Database Menolak: ' . $cleanMsg)->withInput();
             }
 
-            return redirect()->route('customer.dashboard')->with('success', 'Booking Berhasil! Silakan lakukan pembayaran.');
+            return redirect()->route('customer.dashboard')->with('success', 'Booking Successful! Please proceed to payment.');
 
         } catch (\Exception $e) {
             return back()->with('error', 'SQL ERROR: ' . $e->getMessage())->withInput();

@@ -59,11 +59,11 @@ return new class extends Migration
 
             SELECT status INTO v_status_properti
             FROM properti
-            WHERE id_properti = p_id_properti; -- Aman karena p_id_properti sudah diset general_ci
+            WHERE id_properti = p_id_properti; 
 
             SELECT COUNT(*) INTO count_bentrok
             FROM transaksi
-            WHERE id_properti = p_id_properti -- Aman
+            WHERE id_properti = p_id_properti 
             AND status IN ('lunas', 'pending')
             AND status != 'batal'
             AND (
@@ -149,11 +149,8 @@ return new class extends Migration
                 WHERE id_trans COLLATE utf8mb4_general_ci LIKE CONCAT('TRX', v_tanggal, '-%') COLLATE utf8mb4_general_ci;
 
                 IF max_id IS NULL THEN
-                    -- Jika belum ada transaksi hari ini, mulai dari 1
                     SET urutan = 1;
                 ELSE
-                    -- Jika sudah ada, ambil angka di belakang (mulai karakter ke-11)
-                    -- Contoh: TRX251227-005 -> ambil '005' -> jadi 5 -> tambah 1 = 6
                     SET urutan = CAST(SUBSTRING(max_id, 11) AS UNSIGNED) + 1;
                 END IF;
 

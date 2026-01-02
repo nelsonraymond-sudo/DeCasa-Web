@@ -9,6 +9,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <style>
         :root {
@@ -204,9 +205,106 @@
     </main>
 
     {{-- FOOTER --}}
-    <footer class="py-4 text-center mt-5" style="background-color: var(--clr-bg-light); color: var(--clr-primary);">
-        <small class="fw-bold">&copy; 2024 Decasa Property. All rights reserved.</small>
-    </footer>
+<footer class="text-center text-lg-start bg-body-tertiary text-muted">
+  <section class="d-flex justify-content-center justify-content-lg-between p-4 border-bottom">
+    <div class="me-5 d-none d-lg-block">
+      <span>Connect with Us on Social Media</span>
+    </div>
+    <div>
+      <a href="https://facebook.com" class="me-4 text-reset">
+        <i class="fab fa-facebook-f"></i>
+      </a>
+      <a href="https://wa.me/+6281233534426" class="me-4 text-reset">
+        <i class="fab fa-whatsapp"></i>
+      </a>
+      <a href="https://tiktok.com" class="me-4 text-reset">
+        <i class="fab fa-tiktok"></i>
+      </a>
+      <a href="https://www.instagram.com/ydfallen_" class="me-4 text-reset">
+        <i class="fab fa-instagram"></i>
+      </a>
+      <a href="https://linkedin.com" class="me-4 text-reset">
+        <i class="fab fa-linkedin"></i>
+      </a>
+    </div>
+  </section>
+  <section class="">
+
+    <div class="container text-center text-md-start mt-5">
+      <div class="row mt-3">
+        <div class="col-md-3 col-lg-4 col-xl-3 mx-auto mb-4">
+    
+          <h6 class="text-uppercase fw-bold mb-4">
+            DeCasa Property
+          </h6>
+          <p>
+            Finding a place to rent in Yogyakarta shouldn’t be complicated.
+            Whether you are looking for a modern apartment in the city center,
+            a spacious family home in the suburbs, or a quiet villa near the rice fields, 
+            we have you covered.
+          </p>
+        </div>
+
+        <div class="col-md-2 col-lg-2 col-xl-2 mx-auto mb-4">
+          <h6 class="text-uppercase fw-bold mb-4">
+            Properties
+          </h6>
+          <p>
+            <a href="#!" class="text-reset">Home</a>
+          </p>
+          <p>
+            <a href="#!" class="text-reset">Villa</a>
+          </p>
+          <p>
+            <a href="#!" class="text-reset">Appartment</a>
+          </p>
+          <p>
+            <a href="#!" class="text-reset">Costs</a>
+          </p>
+        </div>
+
+        <div class="col-md-3 col-lg-2 col-xl-2 mx-auto mb-4">
+          <h6 class="text-uppercase fw-bold mb-4">
+            Menu
+          </h6>
+          <p>
+            <a href="/#home" class="text-reset">Home</a>
+          </p>
+          <p>
+            <a href="/#properties" class="text-reset">Properties</a>
+          </p>
+          <p>
+            <a href="/#services" class="text-reset">Service</a>
+          </p>
+          <p>
+            <a href="/#customer" class="text-reset">Review</a>
+          </p>
+        </div>
+
+        <div class="col-md-4 col-lg-3 col-xl-3 mx-auto mb-md-0 mb-4">
+          <h6 class="text-uppercase fw-bold mb-4">Contact</h6>
+          <p><i class="fas fa-home me-3"></i> Yogyakarta, YK 56125, DIY</p>
+          <p>
+            <i class="fas fa-envelope me-3"></i>
+            decasa@company.com
+          </p>
+          <p><i class="fas fa-phone me-3"></i> +62 812 3353 4426</p>
+        </div>
+        <!-- Grid column -->
+      </div>
+      <!-- Grid row -->
+    </div>
+  </section>
+  <!-- Section: Links  -->
+
+  <!-- Copyright -->
+  <div class="text-center p-4" style="background-color: rgba(0, 0, 0, 0.05);">
+    © 2025 Copyright:
+    <a class="text-reset fw-bold" href="https://mdbootstrap.com/">DeCasa.com</a>
+  </div>
+  <!-- Copyright -->
+</footer>
+<!-- Footer -->
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>

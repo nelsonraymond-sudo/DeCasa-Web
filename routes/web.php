@@ -30,7 +30,7 @@ Route::middleware(['guest'])->group(function () {
 
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
-// --- 2. HALAMAN CUSTOMER (PROTECTED) ---
+// --- 2. HALAMAN CUSTOMER  ---
 Route::middleware(['auth'])->group(function () {
 
     // Dashboard Customer
@@ -53,7 +53,7 @@ Route::middleware(['auth'])->group(function () {
 
 
 
-// --- 3. HALAMAN ADMIN (PROTECTED) ---
+// --- 3. HALAMAN ADMIN ---
 Route::middleware(['auth', 'is_admin'])->prefix('admin')->name('admin.')->group(function () {
     
     // Dashboard 
