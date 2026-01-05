@@ -17,7 +17,7 @@ class DatabaseSeeder extends Seeder
                 'id_user'     => 'A0001',
                 'nm_user'     => 'DeCasa',
                 'email'       => 'admin@decasa.com',
-                'pass'        => Hash::make('admin123'), 
+                'pass'        => Hash::make('admin321'), 
                 'role'        => 'admin',
                 'no_hp'       => '08990991531', 
                 'created_at'  => now(), 
@@ -27,7 +27,7 @@ class DatabaseSeeder extends Seeder
 
         // 2. DATA KATEGORI 
         DB::table('kategori')->insert([
-            ['id_kategori' => 'K0001', 'nm_kategori' => 'Home',     'created_at'=> now(), 'updated_at'=> now()],
+            ['id_kategori' => 'K0001', 'nm_kategori' => 'House',     'created_at'=> now(), 'updated_at'=> now()],
             ['id_kategori' => 'K0002', 'nm_kategori' => 'Appartment', 'created_at'=> now(), 'updated_at'=> now()],
             ['id_kategori' => 'K0003', 'nm_kategori' => 'Villa',     'created_at'=> now(), 'updated_at'=> now()],
             ['id_kategori' => 'K0004', 'nm_kategori' => 'Costs',       'created_at'=> now(), 'updated_at'=> now()],

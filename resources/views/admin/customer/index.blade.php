@@ -39,7 +39,7 @@
                         <td>{{ \Carbon\Carbon::parse($p->tgl_daftar)->format('d M Y') }}</td>
                         <td class="text-center">
                             <span class="badge bg-secondary bg-opacity-10 text-dark rounded-pill px-3">
-                                {{ $p->total_booking }} Transaksi
+                                {{ $p->total_booking }} Transaction
                             </span>
                         </td>
                         <td class="px-4 text-end fw-bold text-success">

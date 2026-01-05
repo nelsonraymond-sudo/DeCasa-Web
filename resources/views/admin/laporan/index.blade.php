@@ -39,11 +39,11 @@
 
                         <td>
                             @if($l->status == 'lunas')
-                                <span class="badge bg-success">Lunas</span>
+                                <span class="badge bg-success">Paid</span>
                             @elseif($l->status == 'pending')
-                                <span class="badge bg-warning text-dark">Menunggu Bayar</span>
+                                <span class="badge bg-warning text-dark">Pending</span>
                             @elseif($l->status == 'batal')
-                                <span class="badge bg-danger">Dibatalkan</span>
+                                <span class="badge bg-danger">Cancelled</span>
                             @else
                                 <span class="badge bg-secondary">{{ $l->status }}</span>
                             @endif

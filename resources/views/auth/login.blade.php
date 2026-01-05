@@ -9,13 +9,26 @@
     <style>
         :root { --sage-primary: #697565; --sage-bg: #F4F6F6; }
         
-        body {
-            background-color: var(--sage-bg); 
+        body { 
             min-height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
             font-family: 'Segoe UI', sans-serif;
+        }
+
+        .bg-section {
+            min-height: 100vh;
+            width: 100%;
+            background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), 
+                        url("{{ asset('assets/background/login.png') }}");
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
         }
 
         .card-login {
@@ -54,6 +67,8 @@
     </style>
 </head>
 <body>
+
+    <section class="bg-section">
 
     <div class="card card-login p-5">
         <div class="text-center mb-4">
@@ -95,6 +110,6 @@
             </div>
         </form>
     </div>
-
+    </section>
 </body>
 </html>

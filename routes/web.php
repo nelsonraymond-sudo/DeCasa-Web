@@ -33,7 +33,7 @@ Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 // --- 2. HALAMAN CUSTOMER  ---
 Route::middleware(['auth'])->group(function () {
 
-    // Dashboard Customer
+    // History Customer
     Route::get('/dashboard', [CustomerDashboard::class, 'index'])->name('customer.dashboard');
 
     // Profile Customer

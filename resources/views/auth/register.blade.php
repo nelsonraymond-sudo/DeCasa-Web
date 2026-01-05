@@ -10,13 +10,23 @@
         :root { --sage-primary: #697565; --sage-bg: #F0F2F0; }
         
         body {
-            background-color: var(--sage-bg);
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+        .bg-section {
             min-height: 100vh;
+            width: 100%;
+            background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), 
+                        url("{{ asset('assets/background/register.jpg') }}");
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-family: 'Segoe UI', sans-serif;
-            padding: 20px; 
+            padding: 20px;
         }
 
         .card-login {
@@ -25,7 +35,7 @@
             background: white;
             border-radius: 0;
             border: none;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2); 
         }
 
         .btn-sage {
@@ -56,50 +66,54 @@
 </head>
 <body>
 
-    <div class="card card-login p-5">
-        <div class="text-center mb-4">
-            <h3 class="logo-text mb-2">New Account</h3>
-            <p class="text-muted small">Register a new account</p>
+    <section class="bg-section">
+    
+        <div class="card card-login p-5">
+            <div class="text-center mb-4">
+                <h3 class="logo-text mb-2">New Account</h3>
+                <p class="text-muted small">Register a new account</p>
+            </div>
+
+            <form action="{{ route('register.process') }}" method="POST">
+                @csrf
+                
+                <div class="mb-3">
+                    <label class="form-label small fw-bold text-muted">USERNAME</label>
+                    <input type="text" name="nm_user" class="form-control" required>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label small fw-bold text-muted">EMAIL</label>
+                        <input type="email" name="email" class="form-control" required>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label small fw-bold text-muted">PHONE</label>
+                        <input type="text" name="no_hp" class="form-control" required>
+                    </div>
+                </div>
+
+                <div class="mb-4">
+                    <label class="form-label small fw-bold text-muted">PASSWORD</label>
+                    <input type="password" name="password" class="form-control" required>
+                </div>
+
+                <div class="mb-4">
+                    <label class="form-label small fw-bold text-muted">REPEAT PASSWORD</label>
+                    <input type="password" name="password_confirmation" class="form-control" required>
+                </div>
+
+                <button type="submit" class="btn btn-sage mb-3">REGISTER</button>
+
+                <div class="text-center">
+                    <a href="{{ route('login') }}" class="text-muted small text-decoration-none">
+                        Already have an account? <span class="fw-bold" style="color: var(--sage-primary)">Login</span>
+                    </a>
+                </div>
+            </form>
         </div>
 
-        <form action="{{ route('register.process') }}" method="POST">
-            @csrf
-            
-            <div class="mb-3">
-                <label class="form-label small fw-bold text-muted">USERNAME</label>
-                <input type="text" name="nm_user" class="form-control"  required>
-            </div>
-
-            <div class="row">
-                <div class="col-md-6 mb-3">
-                    <label class="form-label small fw-bold text-muted">EMAIL</label>
-                    <input type="email" name="email" class="form-control"  required>
-                </div>
-                <div class="col-md-6 mb-3">
-                    <label class="form-label small fw-bold text-muted">PHONE</label>
-                    <input type="text" name="no_hp" class="form-control"  required>
-                </div>
-            </div>
-
-            <div class="mb-4">
-                <label class="form-label small fw-bold text-muted">PASSWORD</label>
-                <input type="password" name="password" class="form-control"  required>
-            </div>
-
-            <div class="mb-4">
-            <label class="form-label small fw-bold text-muted">REPEAT PASSWORD</label>
-            <input type="password" name="password_confirmation" class="form-control" required>
-        </div>
-
-            <button type="submit" class="btn btn-sage mb-3">REGISTER</button>
-
-            <div class="text-center">
-                <a href="{{ route('login') }}" class="text-muted small text-decoration-none">
-                    Already have an account? <span class="fw-bold" style="color: var(--sage-primary)">Login</span>
-                </a>
-            </div>
-        </form>
-    </div>
+    </section>
 
 </body>
 </html>
