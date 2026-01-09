@@ -10,10 +10,8 @@
     <link rel="stylesheet" href="{{ asset('css/bootstrap.min.css') }}">
     <link rel="stylesheet" href="{{ asset('css/bootstrap-icons.css') }}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-
-   
-    
-
+    <link rel="stylesheet" href="{{ asset('css/leaflet.css') }}">
+    {{-- CUSTOM STYLES --}}
    <style>
     :root {
         --clr-primary: #4A5D23;       
@@ -99,6 +97,8 @@
         border-color: var(--clr-secondary) !important;
         box-shadow: 0 0 0 0.25rem rgba(139, 90, 43, 0.2) !important;
     }
+    .cursor-pointer { cursor: pointer; transition: 0.2s; }
+    .cursor-pointer:hover { opacity: 0.8; border-color: var(--bs-primary) !important; }
 </style>
 </head>
 <body>
@@ -139,7 +139,7 @@
                     @endauth
 
                 </ul>
-                
+            
                 <div class="d-flex gap-2 mt-3 mt-lg-0 align-items-center justify-content-center">
                     @guest
                         <a href="{{ route('login') }}" class="btn btn-outline-primary rounded-pill px-4 fw-bold">
@@ -224,7 +224,7 @@
                 <p><a href="/#customer" class="text-reset">Review</a></p>
                  <p><a href="{{ route('customer.dashboard') }}" class="text-reset">History</a></p>
               </div>
-
+            
               <div class="col-md-4 col-lg-3 col-xl-3 mx-auto mb-md-0 mb-4">
                 <h6 class="text-uppercase fw-bold mb-4">Contact</h6>
                 <p><i class="fas fa-home me-3"></i> Yogyakarta, YK 56125, DIY</p>
@@ -243,7 +243,8 @@
           </div>
       </section>
     </footer>
-
+    {{-- SCRIPTS --}}
     <script src="{{ asset('js/bootstrap.bundle.min.js') }}"></script>
+    <script src="{{ asset('js/leaflet.js') }}"></script>
 </body>
 </html>

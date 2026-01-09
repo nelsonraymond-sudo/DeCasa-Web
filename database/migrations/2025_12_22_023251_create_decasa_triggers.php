@@ -109,48 +109,6 @@ return new class extends Migration
                 END IF;
             END;
         ");
-
-        // 5. TRIGGER: UPDATE STATUS PROPERTI SAAT BOOKING MASUK
-        DB::unprepared("
-            DROP TRIGGER IF EXISTS tg_after_insert_transaksi;
-            CREATE TRIGGER tg_after_insert_transaksi AFTER INSERT ON transaksi
-            FOR EACH ROW BEGIN
-                IF NEW.status IN ('pending', 'lunas') THEN
-                    UPDATE properti 
-                    SET status = 'penuh', updated_at = NOW()
-                    WHERE id_properti = NEW.id_properti;
-                END IF;
-            END;
-        ");
-
-        // 6. TRIGGER: UPDATE STATUS PROPERTI SAAT STATUS TRANSAKSI BERUBAH
-        DB::unprepared("
-            DROP TRIGGER IF EXISTS tg_after_update_transaksi;
-            CREATE TRIGGER tg_after_update_transaksi AFTER UPDATE ON transaksi
-            FOR EACH ROW BEGIN
-                DECLARE ada_transaksi_aktif INT;
-                
-                IF (OLD.status IN ('pending', 'lunas') AND NEW.status IN ('batal', 'selesai')) THEN
-                   
-                   SELECT COUNT(*) INTO ada_transaksi_aktif
-                   FROM transaksi
-                   WHERE id_properti = NEW.id_properti
-                     AND status IN ('pending', 'lunas')
-                     AND id_trans != NEW.id_trans;
-                   
-                   IF ada_transaksi_aktif = 0 THEN
-                       UPDATE properti 
-                       SET status = 'tersedia', updated_at = NOW()
-                       WHERE id_properti = NEW.id_properti;
-                   END IF;
-                   
-                ELSEIF OLD.status = 'batal' AND NEW.status IN ('pending', 'lunas') THEN
-                    UPDATE properti 
-                    SET status = 'penuh', updated_at = NOW()
-                    WHERE id_properti = NEW.id_properti;
-                END IF;
-            END;
-        ");
     }
 
     public function down(): void
@@ -159,7 +117,5 @@ return new class extends Migration
         DB::unprepared("DROP TRIGGER IF EXISTS tg_durasi_total_harga");
         DB::unprepared("DROP TRIGGER IF EXISTS tg_validasi_durasi_totalharga");
         DB::unprepared("DROP TRIGGER IF EXISTS tg_validasi_tgl_book");
-        DB::unprepared("DROP TRIGGER IF EXISTS tg_after_insert_transaksi");
-        DB::unprepared("DROP TRIGGER IF EXISTS tg_after_update_transaksi");
     }
 };

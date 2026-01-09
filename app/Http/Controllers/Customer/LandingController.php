@@ -34,7 +34,7 @@ class LandingController extends Controller
         $cuaca = null;
     try {
         $apiKey = 'b9ef90e3f027f446d5f67152cde5e37d'; 
-        $lat = '-7.7956'; // Jogja
+        $lat = '-7.7956';
         $lon = '110.3695';
         $response = Http::get("https://api.openweathermap.org/data/2.5/weather?lat={$lat}&lon={$lon}&appid={$apiKey}&units=metric&lang=id");
         $cuaca = $response->json();

@@ -4,10 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@yield('title', 'Decasa Admin')</title>
-    
+    {{-- STYLESHEETS --}}
     <link rel="stylesheet" href="{{ asset('css/bootstrap-icons.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/bootstrap.min.css') }}">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    
+    <link rel="stylesheet" href="{{ asset('css/leaflet.css') }}">
+    {{-- CUSTOM STYLES --}}
     <style>
         :root {
             --primary: #697565; 
@@ -37,6 +39,7 @@
             border-right: 1px solid #e0e0e0;
             z-index: 1000;
             padding-top: 1.5rem;
+            overflow-y: auto;
         }
 
         .sidebar-brand {
@@ -98,7 +101,7 @@
     </style>
 </head>
 <body>
-
+    
     <nav class="sidebar">
         <div class="sidebar-brand">DeCasa</div>
         
@@ -113,7 +116,7 @@
             <a href="{{ route('admin.fasilitas.index') }}" class="nav-link {{ Request::routeIs('admin.fasilitas.index') ? 'active' : '' }}">
                 Facilities
             </a>
-                </div>
+    
             </div>
 
             <div class="my-2 border-top"></div> 
@@ -209,7 +212,8 @@
         @yield('content')
         
     </div>
-
+    {{-- SCRIPTS --}}
+    <script src="{{ asset('js/leaflet.js') }}"></script>
     <script src="{{ asset('js/bootstrap.bundle.min.js') }}"></script>
 </body>
 </html>

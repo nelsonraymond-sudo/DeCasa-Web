@@ -70,7 +70,7 @@ class AuthController extends Controller
                 'no_hp'   => $request->no_hp,
             ]);
             
-            return redirect()->route('login')->with('success', "You are registered with ID: $newId. Please login.");
+            return redirect()->route('login')->with('success', "You are registered. Please login.");
 
         } catch (\Exception $e) {
             return back()->withErrors(['msg' => 'Gagal Register: ' . $e->getMessage()])->withInput();

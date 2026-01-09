@@ -60,7 +60,6 @@ return new class extends Migration
             proc_label: BEGIN  
                 DECLARE v_durasi INT;
                 DECLARE v_total DECIMAL(12,2);
-                
                 DECLARE v_availability VARCHAR(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
                 DECLARE v_id_trans VARCHAR(13) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
                 DECLARE v_harga DECIMAL(12,2);
@@ -77,13 +76,13 @@ return new class extends Migration
                 
                 IF v_availability != 'tersedia' THEN
                     ROLLBACK;
-                    SELECT 'ERROR: Property unavailable (Full)' AS message;
+                    SELECT 'ERROR: Property unavailable (Full on selected dates)' AS message;
                     LEAVE proc_label;
                 END IF;
                 
                 SELECT harga INTO v_harga 
                 FROM properti 
-                WHERE id_properti COLLATE utf8mb4_general_ci = p_id_properti COLLATE utf8mb4_general_ci;
+                WHERE id_properti = p_id_properti;
                 
                 SET v_durasi = hitung_durasi(p_checkin, p_checkout);
                 SET v_total = v_harga * v_durasi;
@@ -97,10 +96,6 @@ return new class extends Migration
                     v_id_trans, p_id_user, p_id_properti, p_id_metode,
                     NOW(), p_checkin, p_checkout, v_durasi, v_total, 'pending', NOW()
                 );
-
-                UPDATE properti 
-                SET status = 'penuh' 
-                WHERE id_properti COLLATE utf8mb4_general_ci = p_id_properti COLLATE utf8mb4_general_ci;
                 
                 COMMIT;
                 

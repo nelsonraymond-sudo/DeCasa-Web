@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Register - DeCasa Admin</title>
     <link rel="stylesheet" href="{{ asset('css/bootstrap.min.css') }}">
-    
+    {{ -- CUSTOM STYLES -- }}
     <style>
         :root { --sage-primary: #697565; --sage-bg: #F0F2F0; }
         

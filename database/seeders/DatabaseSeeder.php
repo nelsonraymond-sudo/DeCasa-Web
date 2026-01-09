@@ -17,7 +17,7 @@ class DatabaseSeeder extends Seeder
                 'id_user'     => 'A0001',
                 'nm_user'     => 'DeCasa',
                 'email'       => 'admin@decasa.com',
-                'pass'        => Hash::make('admin321'), 
+                'pass'        => Hash::make('admin'), 
                 'role'        => 'admin',
                 'no_hp'       => '08990991531', 
                 'created_at'  => now(), 

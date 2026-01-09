@@ -48,6 +48,8 @@ class PropertiController extends Controller
             'status'      => 'required',
             'fotos'       => 'required|array|min:1',
             'fotos.*'     => 'image|mimes:jpeg,png,jpg,gif|max:5000',
+            'latitude'    => 'nullable',
+            'longitude'   => 'nullable',
         ]);
 
         try {
@@ -76,6 +78,8 @@ class PropertiController extends Controller
             ->where('id_properti', $idBaru)
             ->update([
                 'status' => $request->status,
+                'latitude'   => $request->latitude,   
+                'longitude'  => $request->longitude,
                 'updated_at' => now() 
             ]);
 
@@ -161,6 +165,8 @@ class PropertiController extends Controller
             'alamat'      => 'required',
             'status'      => 'required',
             'new_fotos.*' => 'image|mimes:jpeg,png,jpg,gif|max:5000',
+            'latitude'    => $request->latitude,
+            'longitude'   => $request->longitude,
         ]);
 
         try {

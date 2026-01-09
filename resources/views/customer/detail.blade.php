@@ -62,6 +62,15 @@
                     <div class="col-12 text-muted">No facility data available.</div>
                 @endforelse
             </div>
+        
+
+        <h4 class="mt-4">Location</h4>
+            <div class="card border-0 shadow-sm mb-5">
+                <div class="card-body p-0">
+                    {{-- Container Peta --}}
+                    <div id="map" style="height: 350px; width: 100%; z-index: 1;"></div>
+                </div>
+            </div>
         </div>
 
         <div class="col-lg-4">
@@ -99,5 +108,21 @@
         </div>
     </div>
 </div>
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        var lat = {{ $properti->latitude ?? -6.175392 }};
+        var lng = {{ $properti->longitude ?? 106.827153 }};
+        var title = "{{ $properti->nm_properti }}";
 
+        var map = L.map('map').setView([lat, lng], 15);
+
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; OpenStreetMap contributors'
+        }).addTo(map);
+
+        L.marker([lat, lng]).addTo(map)
+            .bindPopup("<b>" + title + "</b><br>Property Location.")
+            .openPopup();
+    });
+</script>
 @endsection

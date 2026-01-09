@@ -7,7 +7,7 @@
     <div class="col-md-8">
         <div class="card border-0 shadow-sm p-4 bg-white rounded-0">
             
-            <h5 class="fw-bold mb-4">Edit Property: {{ $properti->id_properti }}</h5>
+            <h5 class="fw-bold mb-4">Edit Property: {{ $properti->nm_properti }}</h5>
 
             <form action="{{ route('admin.properti.update', $properti->id_properti) }}" method="POST" enctype="multipart/form-data">
                 @csrf
@@ -37,26 +37,36 @@
                         <input type="number" name="harga" class="form-control" value="{{ old('harga', $properti->harga) }}" required>
                     </div>
                     <div class="col-md-6 mb-3">
-                        <label for="status">Status Property</label>
+                        <label class="form-label text-muted small fw-bold">STATUS</label>
                         <select name="status" id="status" class="form-control" required>
-                            <option value="available" {{ $properti->status == 'available' ? 'selected' : '' }}>
-                                Available
-                            </option>
-                            <option value="full" {{ $properti->status == 'full' ? 'selected' : '' }}>
-                                Full
-                            </option>
+                            <option value="available" {{ $properti->status == 'available' ? 'selected' : '' }}>Available</option>
+                            <option value="full" {{ $properti->status == 'full' ? 'selected' : '' }}>Full</option>
                         </select>
                     </div>
                 </div>
 
                 <div class="mb-3">
-                    <label class="form-label text-muted small fw-bold">ADDRESS</label>
-                    <input type="text" name="alamat" class="form-control" value="{{ old('alamat', $properti->alamat) }}">
+                    <label class="form-label text-muted small fw-bold">LOCATION</label>
+                    <div id="map" style="height: 300px; border-radius: 8px; z-index: 0; border: 1px solid #ddd;"></div>
+                    
+                    <div class="row mt-2">
+                        <div class="col">
+                            <input type="text" name="latitude" id="latitude" class="form-control" placeholder="Latitude" value="{{ $properti->latitude }}" readonly>
+                        </div>
+                        <div class="col">
+                            <input type="text" name="longitude" id="longitude" class="form-control" placeholder="Longitude" value="{{ $properti->longitude }}" readonly>
+                        </div>
+                    </div>
                 </div>
-
+                
                 <div class="mb-3">
                     <label class="form-label text-muted small fw-bold">DESCRIPTION</label>
                     <textarea name="deskripsi" class="form-control" rows="4">{{ old('deskripsi', $properti->deskripsi) }}</textarea>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label text-muted small fw-bold">ADDRESS</label>
+                    <textarea name="alamat" class="form-control" rows="2">{{ old('alamat', $properti->alamat) }}</textarea>
                 </div>
 
                 <div class="mb-4">
@@ -127,4 +137,30 @@
         </div>
     </div>
 </div>
+
+<script src="{{ asset('js/leaflet.js') }}"></script>
+<script>
+    var defaultLat = -7.8011945; 
+    var defaultLng = 110.364917;
+    
+    var curLat = document.getElementById('latitude').value;
+    var curLng = document.getElementById('longitude').value;
+
+    if (!curLat) curLat = defaultLat;
+    if (!curLng) curLng = defaultLng;
+
+    var map = L.map('map').setView([curLat, curLng], 13);
+
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '© OpenStreetMap contributors'
+    }).addTo(map);
+
+    var marker = L.marker([curLat, curLng], {draggable: true}).addTo(map);
+
+    marker.on('dragend', function(event) {
+        var position = marker.getLatLng();
+        document.getElementById('latitude').value = position.lat;
+        document.getElementById('longitude').value = position.lng;
+    });
+</script>
 @endsection
