@@ -220,34 +220,37 @@ return new class extends Migration
         // 6. PROCEDURE: UPDATE PROFIL
         DB::unprepared("
             DROP PROCEDURE IF EXISTS update_profile;
-            CREATE PROCEDURE update_profile(
-                IN p_id_user VARCHAR(5),
-                IN p_nama VARCHAR(100),
-                IN p_email VARCHAR(100),
-                IN p_no_hp VARCHAR(20)
-            )
-            BEGIN
-                DECLARE v_email_check INT;
-                
-                SELECT COUNT(*) INTO v_email_check 
-                FROM users 
-                WHERE email = p_email AND id_user != p_id_user;
-                
-                IF v_email_check > 0 THEN
-                    SELECT 'ERROR: The email address is already being used by another user.' AS message;
-                ELSE
-                    UPDATE users
-                    SET 
-                        nm_user = COALESCE(p_nama, nm_user),
-                        email = COALESCE(p_email, email),
-                        no_hp = COALESCE(p_no_hp, no_hp),
-                        updated_at = NOW()
-                    WHERE id_user = p_id_user;
-                    
-                    SELECT 'SUCCESS: Profil updated' AS message;
-                END IF;
-            END;
-        ");
+        
+        CREATE PROCEDURE update_profile(
+            IN p_id_user VARCHAR(5) CHARSET utf8mb4 COLLATE utf8mb4_general_ci,
+            IN p_nama VARCHAR(100) CHARSET utf8mb4 COLLATE utf8mb4_general_ci,
+            IN p_email VARCHAR(100) CHARSET utf8mb4 COLLATE utf8mb4_general_ci,
+            IN p_no_hp VARCHAR(20) CHARSET utf8mb4 COLLATE utf8mb4_general_ci
+        )
+        BEGIN
+            DECLARE v_email_check INT;
+
+            -- Cek email (sekarang aman karena parameter sudah didefinisikan sbg general_ci)
+            SELECT COUNT(*) INTO v_email_check
+            FROM users
+            WHERE email = p_email 
+            AND id_user != p_id_user;
+
+            IF v_email_check > 0 THEN
+                SELECT 'ERROR: The email address is already being used by another user.' AS message;
+            ELSE
+                UPDATE users
+                SET 
+                    nm_user = COALESCE(p_nama, nm_user),
+                    email = COALESCE(p_email, email),
+                    no_hp = COALESCE(p_no_hp, no_hp),
+                    updated_at = NOW()
+                WHERE id_user = p_id_user;
+
+                SELECT 'SUCCESS: Profil updated' AS message;
+            END IF;
+        END
+    ");
 
         // 7. PROCEDURE: SEARCH PROPERTI
         DB::unprepared("

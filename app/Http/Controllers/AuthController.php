@@ -84,4 +84,36 @@ class AuthController extends Controller
         $request->session()->regenerateToken();
         return redirect('/login');
     }
+
+    public function loginApi(Request $request)
+    {
+        $request->validate([
+            'email'    => 'required|email',
+            'password' => 'required',
+        ]);
+
+        // Ambil input
+        $credentials = $request->only('email', 'password');
+
+        // Coba login
+        if (Auth::attempt($credentials)) {
+            $user = Auth::user();
+            
+            // Create Token (Membutuhkan Laravel Sanctum)
+            // Pastikan User model memiliki trait HasApiTokens
+            $token = $user->createToken('auth_token')->plainTextToken;
+
+            return response()->json([
+                'message' => 'Login success',
+                'access_token' => $token,
+                'token_type' => 'Bearer',
+                'data' => $user
+            ], 200);
+        }
+
+        // Jika gagal
+        return response()->json([
+            'message' => 'Email or Password incorrect'
+        ], 401);
+    }
 }

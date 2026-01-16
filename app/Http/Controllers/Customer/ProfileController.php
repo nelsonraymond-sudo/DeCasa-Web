@@ -2,11 +2,11 @@
 
 namespace App\Http\Controllers\Customer;
 
+use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Hash;
-use App\Models\User; 
+use Illuminate\Support\Facades\DB;
 
 class ProfileController extends Controller
 {
@@ -21,23 +21,44 @@ class ProfileController extends Controller
         $user = Auth::user();
 
         $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|email|max:255|unique:users,email,' . $user->id,
+            'name'     => 'required|string|max:100', 
+            'email'    => 'required|email|max:100',
+            'no_hp'    => 'nullable|string|max:20', 
             'password' => 'nullable|min:6|confirmed',
         ]);
 
-        $user->name = $request->name;
-        $user->email = $request->email;
+        try {
+            if ($request->filled('password')) {
+                DB::table('users')
+                    ->where('id_user', $user->id_user)
+                    ->update([
+                        'pass' => Hash::make($request->password), 
+                        'updated_at' => now()
+                    ]);
+            }
 
-        if ($request->filled('password')) {
-            $user->password = Hash::make($request->password);
+            $no_hp_to_update = $request->no_hp ?? $user->no_hp;
+
+            $result = DB::select("CALL update_profile(?, ?, ?, ?)", [
+                $user->id_user,
+                $request->name,  
+                $request->email,
+                $no_hp_to_update
+            ]);
+
+            $message = $result[0]->message ?? 'An error has occurred.';
+
+            if (str_contains($message, 'ERROR')) {
+                return back()->with('error', $message);
+            }
+
+            return back()->with('success', $message);
+
+        } catch (\Exception $e) {
+            return back()->with('error', 'System Error: ' . $e->getMessage());
         }
-
-        $user->save();
-
-        return back()->with('success', 'Profile successfully updated!');
     }
-    
+
     public function logout(Request $request)
     {
         Auth::logout();

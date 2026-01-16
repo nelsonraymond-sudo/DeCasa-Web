@@ -14,4 +14,14 @@ class Properti extends Model
     public $incrementing = false;
     protected $keyType = 'string';
     protected $guarded = [];
+
+    public function foto()
+    {
+        return $this->hasMany(Foto::class, 'id_properti', 'id_properti');
+    }
+
+    public function fasilitas()
+    {
+        return $this->hasMany(DetailFasilitas::class, 'id_properti', 'id_properti');
+}
 }

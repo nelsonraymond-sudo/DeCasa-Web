@@ -165,8 +165,8 @@ class PropertiController extends Controller
             'alamat'      => 'required',
             'status'      => 'required',
             'new_fotos.*' => 'image|mimes:jpeg,png,jpg,gif|max:5000',
-            'latitude'    => $request->latitude,
-            'longitude'   => $request->longitude,
+            'latitude'    => 'nullable',
+            'longitude'   => 'nullable',
         ]);
 
         try {
