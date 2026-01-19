@@ -6,34 +6,36 @@ use Laravel\Sanctum\HasApiTokens;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-use Illuminate\Support\Facades\DB; 
+use Illuminate\Support\Facades\DB;
 
 class User extends Authenticatable
 {
     use HasApiTokens, HasFactory, Notifiable;
 
-    protected $table = 'users'; 
-    protected $primaryKey = 'id_user'; 
-    public $incrementing = false; 
+    protected $table = 'users';
+    protected $primaryKey = 'id_user';
+    public $incrementing = false;
     protected $keyType = 'string';
 
     protected $fillable = [
         'id_user',
         'nm_user',
         'email',
-        'pass', 
+        'pass',
         'role',
         'no_hp',
+        'gender',
+        'birth_date',
     ];
 
     /**
      * The attributes that should be hidden for serialization.  
      */
     protected $hidden = [
-        'pass', 
+        'pass',
         'remember_token',
     ];
-    
+
     public function getAuthPassword()
     {
         return $this->pass;
@@ -43,16 +45,16 @@ class User extends Authenticatable
     {
         static::creating(function ($user) {
             if ($user->role === 'customer' && empty($user->id_user)) {
-                
+
                 $query = DB::select("SELECT generate_id_customer() as new_id");
-                
+
                 $user->id_user = $query[0]->new_id;
             }
-            
-             if ($user->role === 'admin' && empty($user->id_user)) {
-                 $query = DB::select("SELECT generate_id_admin() as new_id"); 
-                 $user->id_user = $query[0]->new_id;
-             }
+
+            if ($user->role === 'admin' && empty($user->id_user)) {
+                $query = DB::select("SELECT generate_id_admin() as new_id");
+                $user->id_user = $query[0]->new_id;
+            }
         });
     }
 }

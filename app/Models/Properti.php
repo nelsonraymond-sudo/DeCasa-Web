@@ -23,5 +23,10 @@ class Properti extends Model
     public function fasilitas()
     {
         return $this->hasMany(DetailFasilitas::class, 'id_properti', 'id_properti');
-}
+    }
+
+    public function kategori()
+    {
+        return $this->belongsTo(Kategori::class, 'id_kategori', 'id_kategori');
+    }
 }

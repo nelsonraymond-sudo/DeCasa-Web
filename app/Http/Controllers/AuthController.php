@@ -6,17 +6,26 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Validator; 
 use App\Models\User;
 
 class AuthController extends Controller
 {
-    public function showLogin() { return view('auth.login'); }
-    public function showRegister() { return view('auth.register'); }
+    // --- WEB METHODS ---
+
+    public function showLogin()
+    {
+        return view('auth.login');
+    }
+    public function showRegister()
+    {
+        return view('auth.register');
+    }
 
     public function processLogin(Request $request)
     {
         $request->validate([
-            'email'    => 'required', 
+            'email' => 'required',
             'password' => 'required',
         ]);
 
@@ -29,10 +38,10 @@ class AuthController extends Controller
             $request->session()->regenerate();
             $role = Auth::user()->role;
 
-            if ($role === 'admin') { 
+            if ($role === 'admin') {
                 return redirect()->intended(route('admin.dashboard'));
             } else if ($role === 'customer') {
-                return redirect()->intended(route('home')); 
+                return redirect()->intended(route('home'));
             } else {
                 Auth::logout();
                 return back()->withErrors(['email' => 'Invalid role.']);
@@ -45,31 +54,30 @@ class AuthController extends Controller
     public function processRegister(Request $request)
     {
         $request->validate([
-            'nm_user'  => 'required|max:100',
-            'email'    => 'required|email|unique:users,email',
-            'no_hp'    => 'required',
-            'password' => 'required|min:6|confirmed', 
+            'nm_user' => 'required|max:100',
+            'email' => 'required|email|unique:users,email',
+            'no_hp' => 'required',
+            'password' => 'required|min:6|confirmed',
         ]);
 
         try {
             $query = DB::select("SELECT generate_id_customer() AS id");
-            
+
             if (empty($query)) {
                 throw new \Exception("Database gagal men-generate ID Customer.");
             }
-            
+
             $newId = $query[0]->id;
 
-    
             User::create([
-                'id_user' => $newId,         
+                'id_user' => $newId,
                 'nm_user' => $request->nm_user,
-                'email'   => $request->email,
-                'pass'    => Hash::make($request->password),
-                'role'    => 'customer',          
-                'no_hp'   => $request->no_hp,
+                'email' => $request->email,
+                'password' => Hash::make($request->password),
+                'role' => 'customer',
+                'no_hp' => $request->no_hp,
             ]);
-            
+
             return redirect()->route('login')->with('success', "You are registered. Please login.");
 
         } catch (\Exception $e) {
@@ -85,25 +93,28 @@ class AuthController extends Controller
         return redirect('/login');
     }
 
+    // --- API METHODS ---
+
     public function loginApi(Request $request)
     {
-        $request->validate([
-            'email'    => 'required|email',
+        $validator = Validator::make($request->all(), [
+            'email' => 'required|email',
             'password' => 'required',
         ]);
 
-        // Ambil input
+        if ($validator->fails()) {
+            return response()->json($validator->errors(), 422);
+        }
+
         $credentials = $request->only('email', 'password');
 
-        // Coba login
         if (Auth::attempt($credentials)) {
             $user = Auth::user();
-            
-            // Create Token (Membutuhkan Laravel Sanctum)
-            // Pastikan User model memiliki trait HasApiTokens
+
             $token = $user->createToken('auth_token')->plainTextToken;
 
             return response()->json([
+                'success' => true,
                 'message' => 'Login success',
                 'access_token' => $token,
                 'token_type' => 'Bearer',
@@ -111,9 +122,57 @@ class AuthController extends Controller
             ], 200);
         }
 
-        // Jika gagal
         return response()->json([
+            'success' => false,
             'message' => 'Email or Password incorrect'
         ], 401);
+    } 
+
+    public function registerApi(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'nm_user' => 'required|max:100',
+            'email' => 'required|email|unique:users,email',
+            'no_hp' => 'required',
+            'password' => 'required|min:6|confirmed',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Validation Error',
+                'errors' => $validator->errors()
+            ], 422);
+        }
+
+        try {
+            $query = DB::select("SELECT generate_id_customer() AS id");
+
+            if (empty($query)) {
+                throw new \Exception("Database gagal men-generate ID Customer.");
+            }
+            $newId = $query[0]->id;
+
+            $user = User::create([
+                'id_user' => $newId,
+                'nm_user' => $request->nm_user,
+                'email' => $request->email,
+                'pass' => Hash::make($request->password),
+                'role' => 'customer',
+                'no_hp' => $request->no_hp,
+            ]);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Registration successful',
+                'data' => $user
+            ], 201);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Registration failed: ' . $e->getMessage(),
+            ], 500); 
+        }
     }
 }
