@@ -21,12 +21,9 @@ class TransactionController extends Controller
     public function index()
     {
         $user = Auth::user();
-        if (!$user) {
-            $user = \App\Models\User::first();
-        }
 
         if (!$user) {
-            return response()->json(['message' => 'No user found'], 404);
+            return response()->json(['message' => 'Unauthorized'], 401);
         }
 
         $transactions = Transaksi::where('id_user', $user->id_user)
@@ -50,8 +47,10 @@ class TransactionController extends Controller
      */
     public function store(Request $request)
     {
+        // 1. HIDARI VALIDASI 'exists' agar bisa mencari berdasarkan Nama Bank juga
         $validator = Validator::make($request->all(), [
             'id_properti' => 'required|exists:properti,id_properti',
+            'id_metode' => 'required', // Wajib diisi, tapi pencarian dilakukan di bawah
             'checkin' => 'required|date|after_or_equal:today',
             'checkout' => 'required|date|after:checkin',
         ]);
@@ -65,69 +64,85 @@ class TransactionController extends Controller
         }
 
         $user = Auth::user();
-        if (!$user) {
-            $user = \App\Models\User::first();
-        }
 
         if (!$user) {
-            return response()->json(['message' => 'No user found'], 404);
+            return response()->json(['message' => 'Unauthorized'], 401);
         }
 
-        $id_metode = $request->id_metode;
-        $payment = \App\Models\Payment::where('id_metode', $id_metode)->first();
-        if (!$payment && $id_metode) {
-            $payment = \App\Models\Payment::where('nama_bank', 'like', '%' . $id_metode . '%')->first();
+        $id_metode_input = trim($request->id_metode);
+        $payment = \App\Models\Payment::where('id_metode', $id_metode_input)->first();
+
+        if (!$payment) {
+            $payment = \App\Models\Payment::where('nama_bank', 'like', '%' . $id_metode_input . '%')->first();
         }
+
         if (!$payment) {
             $payment = \App\Models\Payment::first();
         }
-        $id_metode = $payment ? $payment->id_metode : 'PY001';
 
-        $checkin = Carbon::parse($request->checkin);
-        $checkout = Carbon::parse($request->checkout);
-        $durasi = $checkin->diffInDays($checkout);
-        if ($durasi < 1)
-            $durasi = 1;
-
-        $properti = Properti::find($request->id_properti);
-        $total_harga = (string) ($properti->harga * $durasi);
-
-        $dateCode = date('ymd');
-        $prefix = 'TRX' . $dateCode . '-';
-
-        $lastTrans = Transaksi::where('id_trans', 'like', $prefix . '%')
-            ->orderBy('id_trans', 'desc')
-            ->first();
-
-        if ($lastTrans) {
-            $lastNo = (int) substr($lastTrans->id_trans, -3);
-            $nextNo = $lastNo + 1;
-        } else {
-            $nextNo = 1;
+        if (!$payment) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Metode pembayaran tidak valid: ' . $id_metode_input
+            ], 422);
         }
 
-        $id_trans = $prefix . str_pad($nextNo, 3, '0', STR_PAD_LEFT);
+        try {
+            $id_metode = $payment->id_metode;
 
-        $transaksi = Transaksi::create([
-            'id_trans' => $id_trans,
-            'id_user' => $user->id_user,
-            'id_properti' => $request->id_properti,
-            'id_metode' => $id_metode,
-            'tgl_trans' => Carbon::now(),
-            'checkin' => $request->checkin,
-            'checkout' => $request->checkout,
-            'durasi' => $durasi,
-            'total_harga' => $total_harga,
-            'status' => 'pending'
-        ]);
+            $checkin = Carbon::parse($request->checkin);
+            $checkout = Carbon::parse($request->checkout);
+            $durasi = $checkin->diffInDays($checkout);
 
-        $transaksi->load(['properti.foto', 'properti.fasilitas.fasilitas', 'properti.kategori', 'payment']);
+            if ($durasi < 1)
+                $durasi = 1;
 
-        return response()->json([
-            'success' => true,
-            'message' => 'Transaksi Berhasil Dibuat',
-            'data' => $transaksi
-        ], 201);
+            $properti = Properti::find($request->id_properti);
+            $total_harga = (string) ($properti->harga * $durasi);
+
+            $dateCode = date('ymd');
+            $prefix = 'TRX' . $dateCode . '-';
+
+            $lastTrans = Transaksi::where('id_trans', 'like', $prefix . '%')
+                ->orderBy('id_trans', 'desc')
+                ->first();
+
+            if ($lastTrans) {
+                $lastNo = (int) substr($lastTrans->id_trans, -3);
+                $nextNo = $lastNo + 1;
+            } else {
+                $nextNo = 1;
+            }
+
+            $id_trans = $prefix . str_pad($nextNo, 3, '0', STR_PAD_LEFT);
+
+            $transaksi = Transaksi::create([
+                'id_trans' => $id_trans,
+                'id_user' => $user->id_user,
+                'id_properti' => $request->id_properti,
+                'id_metode' => $id_metode, 
+                'tgl_trans' => Carbon::now(),
+                'checkin' => $checkin->toDateString(), 
+                'checkout' => $checkout->toDateString(), 
+                'durasi' => $durasi,
+                'total_harga' => $total_harga,
+                'status' => 'pending'
+            ]);
+
+            $transaksi->load(['properti.foto', 'properti.fasilitas.fasilitas', 'properti.kategori', 'payment']);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Transaksi Berhasil Dibuat',
+                'data' => $transaksi
+            ], 201);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Gagal membuat transaksi: ' . $e->getMessage()
+            ], 500);
+        }
     }
 
     /**

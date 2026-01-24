@@ -18,30 +18,27 @@ class ProfileController extends Controller
 
     public function update(Request $request)
     {
+        /** @var \App\Models\User $user */
         $user = Auth::user();
 
         $request->validate([
-            'name'     => 'required|string|max:100', 
-            'email'    => 'required|email|max:100',
-            'no_hp'    => 'nullable|string|max:20', 
+            'name' => 'required|string|max:100',
+            'email' => 'required|email|max:100',
+            'no_hp' => 'nullable|string|max:20',
             'password' => 'nullable|min:6|confirmed',
         ]);
 
         try {
             if ($request->filled('password')) {
-                DB::table('users')
-                    ->where('id_user', $user->id_user)
-                    ->update([
-                        'pass' => Hash::make($request->password), 
-                        'updated_at' => now()
-                    ]);
+                $user->pass = Hash::make($request->password);
+                $user->save();
             }
 
             $no_hp_to_update = $request->no_hp ?? $user->no_hp;
 
             $result = DB::select("CALL update_profile(?, ?, ?, ?)", [
                 $user->id_user,
-                $request->name,  
+                $request->name,
                 $request->email,
                 $no_hp_to_update
             ]);
@@ -65,6 +62,6 @@ class ProfileController extends Controller
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
-        return redirect('/'); 
+        return redirect('/');
     }
 }

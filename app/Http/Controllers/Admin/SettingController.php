@@ -18,23 +18,20 @@ class SettingController extends Controller
 
     public function update(Request $request)
     {
+        
         $user = Auth::user();
 
         $request->validate([
-            'nm_user'  => 'required|string|max:100',
-            'email'    => 'required|email',
-            'no_hp'    => 'required|string|max:20',
-            'password' => 'nullable|min:6|confirmed' 
+            'nm_user' => 'required|string|max:100',
+            'email' => 'required|email',
+            'no_hp' => 'required|string|max:20',
+            'password' => 'nullable|min:6|confirmed'
         ]);
 
         try {
             if ($request->filled('password')) {
-                DB::table('users')
-                    ->where('id_user', $user->id_user)
-                    ->update([
-                        'pass' => Hash::make($request->password), 
-                        'updated_at' => now()
-                    ]);
+                $user->pass = Hash::make($request->password);
+                $user->save();
             }
 
             $result = DB::select("CALL update_profile(?, ?, ?, ?)", [
@@ -50,8 +47,8 @@ class SettingController extends Controller
                 return back()->with('error', $message);
             }
 
-            return back()->with('success', $message); 
-            
+            return back()->with('success', $message);
+
         } catch (\Exception $e) {
             return back()->with('error', 'System Error: ' . $e->getMessage());
         }

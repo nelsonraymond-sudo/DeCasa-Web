@@ -15,14 +15,14 @@ class DatabaseSeeder extends Seeder
         DB::table('users')->insert([
             [
                 'id_user' => 'A0001',
-                'nm_user' => 'DeCasa',
+                'nm_user' => 'admin',
                 'email' => 'admin@decasa.com',
                 'pass' => Hash::make('admin'),
                 'role' => 'admin',
                 'no_hp' => '08990991531',
                 'created_at' => now(),
                 'updated_at' => now()
-            ]
+            ],
         ]);
 
         // 2. DATA KATEGORI 

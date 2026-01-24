@@ -73,7 +73,7 @@ class AuthController extends Controller
                 'id_user' => $newId,
                 'nm_user' => $request->nm_user,
                 'email' => $request->email,
-                'password' => Hash::make($request->password),
+                'pass' => Hash::make($request->password),
                 'role' => 'customer',
                 'no_hp' => $request->no_hp,
             ]);

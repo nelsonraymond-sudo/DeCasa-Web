@@ -19,41 +19,24 @@ use App\Http\Controllers\Api\PaymentController;
 |
 */
 
-// Public Routes
 Route::post('/login', [AuthController::class, 'loginApi']);
 Route::post('/register', [AuthController::class, 'registerApi']);
+
 Route::get('/properti', [PropertiController::class, 'index']);
 Route::get('/properti/search', [PropertiController::class, 'search']);
 Route::get('/properti/{id}', [PropertiController::class, 'show']);
-Route::post('/transactions/preview', [TransactionController::class, 'preview']); 
-
-Route::prefix('api')->group(function () {
-    Route::get('/properti', [PropertiController::class, 'index']);
-    Route::get('/properti/search', [PropertiController::class, 'search']);
-    Route::get('/properti/{id}', [PropertiController::class, 'show']);
-    Route::post('/transactions/preview', [TransactionController::class, 'preview']);
-});
-
-Route::prefix('api')->group(function () {
-    Route::get('/properti', [PropertiController::class, 'index']);
-    Route::get('/properti/search', [PropertiController::class, 'search']);
-    Route::get('/properti/{id}', [PropertiController::class, 'show']);
-    Route::post('/transactions/preview', [TransactionController::class, 'preview']);
-    Route::get('/transactions', [TransactionController::class, 'index']);
-    Route::post('/transactions', [TransactionController::class, 'store']);
-    Route::get('/transactions/{id}', [TransactionController::class, 'show']);
-    Route::get('/payment-methods', [PaymentController::class, 'index']);
-    Route::get('/booked-dates/{id}', [TransactionController::class, 'getBookedDates']);
-});
-
-Route::get('/transactions', [TransactionController::class, 'index']);
-Route::post('/transactions', [TransactionController::class, 'store']);
-Route::get('/transactions/{id}', [TransactionController::class, 'show']);
-Route::get('/payment-methods', [PaymentController::class, 'index']);
-Route::get('/booked-dates/{id}', [TransactionController::class, 'getBookedDates']);
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('/customer/profile', [CustomerController::class, 'show']);
     Route::post('/customer/profile/update', [CustomerController::class, 'update']);
     Route::post('/logout', [AuthController::class, 'logout']);
+
+    // Transactions
+    Route::get('/transactions', [TransactionController::class, 'index']);
+    Route::post('/transactions', [TransactionController::class, 'store']);
+    Route::post('/transactions/preview', [TransactionController::class, 'preview']);
+    Route::get('/transactions/{id}', [TransactionController::class, 'show']);
+    Route::get('/booked-dates/{id}', [TransactionController::class, 'getBookedDates']);
+
+    Route::get('/payment-methods', [PaymentController::class, 'index']);
 });

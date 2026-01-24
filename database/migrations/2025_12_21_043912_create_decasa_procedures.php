@@ -230,7 +230,6 @@ return new class extends Migration
         BEGIN
             DECLARE v_email_check INT;
 
-            -- Cek email (sekarang aman karena parameter sudah didefinisikan sbg general_ci)
             SELECT COUNT(*) INTO v_email_check
             FROM users
             WHERE email = p_email 

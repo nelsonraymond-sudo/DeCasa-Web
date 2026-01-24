@@ -23,37 +23,40 @@ class CustomerController extends Controller
 
     public function update(Request $request)
     {
-        $user = Auth::user();
+        /** @var \App\Models\User $user */
+        $user = $request->user();
+
+        if (!$user) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Unauthorized'
+            ], 401);
+        }
 
         $request->validate([
-            'name' => 'required|string|max:100',
-            'email' => 'required|email|max:100', 
+            'nm_user' => 'required|string|max:100',
+            'email' => 'required|email|max:100',
             'no_hp' => 'nullable|string|max:20',
             'password' => 'nullable|min:6|confirmed',
         ]);
 
         try {
             if ($request->filled('password')) {
-                DB::table('users')
-                    ->where('id_user', $user->id_user)
-                    ->update([
-                        'pass' => Hash::make($request->password),
-                        'updated_at' => now()
-                    ]);
+                $user->pass = Hash::make($request->password);
             }
 
             if ($request->hasFile('photo')) {
                 $path = $request->file('photo')->store('profiles', 'public');
-                DB::table('users')
-                    ->where('id_user', $user->id_user)
-                    ->update(['foto' => $path]);
+                $user->foto = $path;
             }
+
+            $user->save();
 
             $no_hp_to_update = $request->no_hp ?? $user->no_hp;
 
             $result = DB::select("CALL update_profile(?, ?, ?, ?)", [
                 $user->id_user,
-                $request->name,
+                $request->nm_user,
                 $request->email,
                 $no_hp_to_update
             ]);
@@ -67,12 +70,12 @@ class CustomerController extends Controller
                 ], 400);
             }
 
-            $user_fresh = DB::table('users')->where('id_user', $user->id_user)->first();
+            $user->refresh();
 
             return response()->json([
                 'success' => true,
                 'message' => $message,
-                'data' => $user_fresh
+                'data' => $user
             ], 200);
 
         } catch (\Exception $e) {
